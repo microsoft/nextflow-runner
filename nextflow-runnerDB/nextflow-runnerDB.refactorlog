@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="cd9eecce-78b8-4609-b970-a30e9d78b874" ChangeDateTime="02/08/2022 19:51:23">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PipelineId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cd1514c2-b95b-4e67-853e-230e46357f3e" ChangeDateTime="02/08/2022 19:54:14">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[PipelineId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PipelineParamId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a86d8394-4f64-4553-b8a8-98c48b6cdbb4" ChangeDateTime="02/08/2022 19:54:45">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[PipelineName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ParamName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c85ef832-0716-4a1f-aedd-5af62fbb1c88" ChangeDateTime="02/08/2022 19:55:01">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[Description]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ParamExample" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="984079ff-b3d3-4373-a770-eab5e76ecd3f" ChangeDateTime="02/08/2022 19:55:12">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[GitHubURL]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ParamType" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="792ce39a-a088-489a-888d-13c2a8dede1f" ChangeDateTime="02/08/2022 20:16:09">
+    <Property Name="ElementName" Value="[dbo].[PipelineRun].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineRun]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PipelineRunId" />
+  </Operation>
+</Operations>
