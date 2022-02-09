@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Name>nextflow_runnerDB</Name>
+    <Name>NextflowRunnerDB</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{db9f5ae3-f1c6-4eed-90f4-e86694722d0a}</ProjectGuid>
@@ -66,6 +66,6 @@
     <Build Include="Tables\PipelineRun.sql" />
   </ItemGroup>
   <ItemGroup>
-    <RefactorLog Include="nextflow-runnerDB.refactorlog" />
+    <RefactorLog Include="NextflowRunnerDB.refactorlog" />
   </ItemGroup>
 </Project>
