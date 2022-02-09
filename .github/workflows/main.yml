@@ -33,7 +33,7 @@ jobs:
       run: dotnet build ./NextflowRunnerAPI --configuration Release
 
     - name: Build DACPAC
-      run: dotnet build ./nextflow-runnerDB/NextflowRunnerDB.sqlproj --configuration Release /p:NetCoreBuild=true /p:NETCoreTargetsPath=${{ github.workspace }}/nextflow-runnerDB/BuildDirectory
+      run: dotnet build ./NextflowRunnerDB/NextflowRunnerDB.sqlproj --configuration Release /p:NetCoreBuild=true /p:NETCoreTargetsPath=${{ github.workspace }}/NextflowRunnerDB/BuildDirectory
 
     - name: create API artifact
       run: dotnet publish ./NextflowRunnerAPI -c Release -o ${{env.DOTNET_ROOT}}/myapp
