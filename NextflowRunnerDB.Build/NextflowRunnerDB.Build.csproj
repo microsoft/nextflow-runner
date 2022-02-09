@@ -1,0 +1,11 @@
+<Project Sdk="MSBuild.Sdk.SqlProj/2.0.0">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SqlServerVersion>SqlAzure</SqlServerVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="../NextflowRunnerDB/**/*.sql" />
+  </ItemGroup>
+</Project>
