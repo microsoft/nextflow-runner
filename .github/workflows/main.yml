@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: database
-        path: '**/*.dacpac'
+        path: './NextflowRunnerDB.Build/bin/**/*.dacpac'
 
   provision:
     name: Provision Azure Resources
