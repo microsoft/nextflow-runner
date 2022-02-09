@@ -1,34 +1,53 @@
-﻿using NextflowRunnerAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using NextflowRunnerAPI.Models;
 
 namespace NextflowRunnerAPI.Services
 {
     public class PipelineService : IPipelineService
     {
-        public PipelineService() { }
+        private readonly NextflowRunnerContext _db;
+        public PipelineService(NextflowRunnerContext db)
+        {
+            _db = db;
+        }
 
         public async Task<List<Pipeline>> GetPipelinesAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Pipelines.ToListAsync();
         }
 
-        public async Task<Pipeline> GetPipelineAsync(int pipelineId)
+        public async Task<Pipeline?> GetPipelineAsync(int pipelineId)
         {
-            throw new NotImplementedException();
+            return await _db.Pipelines.FindAsync(pipelineId);
         }
 
         public async Task<Pipeline> CreatePipelineAsync(Pipeline pipeline)
         {
-            throw new NotImplementedException();
+            _db.Pipelines.Add(pipeline);
+            await _db.SaveChangesAsync();
+            return pipeline;
         }
 
-        public async Task<Pipeline> UpdatePipelineAsync(int pipelineId)
+        public async Task<Pipeline?> UpdatePipelineAsync(Pipeline pipeline)
         {
-            throw new NotImplementedException();
+            var dbPipeline = await _db.Pipelines.FindAsync(pipeline.PipelineId);
+
+            if (dbPipeline == null) return null;
+
+            dbPipeline = pipeline;
+
+            await _db.SaveChangesAsync();
+
+            return pipeline;
         }
 
         public async Task DeletePipelineAsync(int pipelineId)
         {
-            throw new NotImplementedException();
+            var dbPipeline = await _db.Pipelines.FindAsync(pipelineId);
+
+            if (dbPipeline == null) return;
+
+            _db.Pipelines.Remove(dbPipeline);
         }
     }
 }
