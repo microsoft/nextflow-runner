@@ -8,6 +8,7 @@ param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
 param batchAccountName string = '${prefix}batch'
 param batchStorageName string = '${prefix}batchsa'
 param vmAdminUserName string = 'azureuser'
+param vmHostName string = '40.83.22.113'
 
 @secure()
 param sqlAdminPassword string
@@ -42,14 +43,6 @@ module batch 'modules/batchservice.bicep' = {
   }
 }
 
-module linuxVM 'modules/linux-basic.bicep' = {
-  name: 'linux-vm'
-  params: {
-    adminUsername: vmAdminUserName
-    adminPasswordOrKey: vmAdminPassword
-  }
-}
-
 module appService 'modules/appservice.bicep' = {
   name: 'hackAPI-appservice'
   params: {
@@ -60,7 +53,7 @@ module appService 'modules/appservice.bicep' = {
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     vmAdminUserName: vmAdminUserName
     vmAdminPassword: vmAdminPassword
-    vmHostName: linuxVM.outputs.hostname
+    vmHostName: vmHostName
   }
 }
 
@@ -69,6 +62,4 @@ output sqlServerFQDN string = sqlDatabase.outputs.sqlServerFQDN
 output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
 output sqlUserName string = sqlDatabase.outputs.sqlUserName
-output vmAdminUserName string = linuxVM.outputs.adminUsername
-output vmHostName string = linuxVM.outputs.hostname
 output batchAccountName string = batch.outputs.batchAccountName
