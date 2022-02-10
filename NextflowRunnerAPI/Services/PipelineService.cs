@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NextflowRunnerAPI.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NextflowRunnerAPI.Services
 {
@@ -16,7 +18,7 @@ namespace NextflowRunnerAPI.Services
             return await _db.Pipelines.ToListAsync();
         }
 
-        public async Task<Pipeline?> GetPipelineAsync(int pipelineId)
+        public async Task<Pipeline> GetPipelineAsync(int pipelineId)
         {
             return await _db.Pipelines.FindAsync(pipelineId);
         }
@@ -28,7 +30,7 @@ namespace NextflowRunnerAPI.Services
             return pipeline;
         }
 
-        public async Task<Pipeline?> UpdatePipelineAsync(Pipeline pipeline)
+        public async Task<Pipeline> UpdatePipelineAsync(Pipeline pipeline)
         {
             var dbPipeline = await _db.Pipelines.FindAsync(pipeline.PipelineId);
 
