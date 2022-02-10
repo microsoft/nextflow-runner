@@ -24,7 +24,7 @@ namespace NextflowRunnerAPI.Services
             return await _db.PipelineParams.FindAsync(pipelineParamId);
         }
 
-        public async Task<PipelineParam?> CreatePipelineParamAsync(int pipelineId, PipelineParam pipelineParam)
+        public async Task<PipelineParam> CreatePipelineParamAsync(int pipelineId, PipelineParam pipelineParam)
         {
             var pipeline = await _db.Pipelines.FindAsync(pipelineId);
 
@@ -39,7 +39,7 @@ namespace NextflowRunnerAPI.Services
             return pipelineParam;
         }
 
-        public async Task<PipelineParam?> UpdatePipelineParamAsync(PipelineParam pipelineParam)
+        public async Task<PipelineParam> UpdatePipelineParamAsync(PipelineParam pipelineParam)
         {
             var dbPipelineParam = await _db.PipelineParams.FindAsync(pipelineParam.PipelineParamId);
 

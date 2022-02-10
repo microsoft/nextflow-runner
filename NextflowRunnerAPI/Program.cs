@@ -55,6 +55,9 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, [FromServices] IPipelineService pipelineService, ExecutorConfiguration executorConfig) =>
 {
+    await Task.Delay(0);
+
+    throw new NotImplementedException();
     //var pipeline = await pipelineService.GetPipelineAsync(pipelineId);
 
     //var run = new PipelineRun 

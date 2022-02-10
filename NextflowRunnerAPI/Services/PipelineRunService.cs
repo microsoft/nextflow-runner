@@ -19,12 +19,12 @@ namespace NextflowRunnerAPI.Services
             return await _db.PipelineRuns.Where(p => p.PipelineId == pipelineId).ToListAsync();
         }
 
-        public async Task<PipelineRun?> GetPipelineRunAsync(int PipelineRunId)
+        public async Task<PipelineRun> GetPipelineRunAsync(int PipelineRunId)
         {
             return await _db.PipelineRuns.FindAsync(PipelineRunId);
         }
 
-        public async Task<PipelineRun?> CreatePipelineRunAsync(int pipelineId, PipelineRun PipelineRun)
+        public async Task<PipelineRun> CreatePipelineRunAsync(int pipelineId, PipelineRun PipelineRun)
         {
             var pipeline = await _db.Pipelines.FindAsync(pipelineId);
            
@@ -39,7 +39,7 @@ namespace NextflowRunnerAPI.Services
             return PipelineRun;
         }
 
-        public async Task<PipelineRun?> UpdatePipelineRunAsync(PipelineRun PipelineRun)
+        public async Task<PipelineRun> UpdatePipelineRunAsync(PipelineRun PipelineRun)
         {
             var dbPipelineRun = await _db.PipelineRuns.FindAsync(PipelineRun.PipelineRunId);
 
