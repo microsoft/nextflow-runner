@@ -1,6 +1,9 @@
+param location string = resourceGroup().location
 param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
-param location string = resourceGroup().location
+param vmAdminUserName string
+param vmHostName string
+
 
 @allowed([
   'nonprod'
@@ -11,6 +14,9 @@ param environmentType string
 // App Settings
 @secure()
 param sqlConnection string
+
+@secure()
+param vmAdminPassword string
 
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
@@ -35,12 +41,26 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|3.1'      
+      linuxFxVersion: 'DOTNETCORE|6.0'
       connectionStrings: [
         {
           name: 'DefaultConnection'
           connectionString: sqlConnection
           type: 'SQLAzure'
+        }
+      ]
+      appSettings: [
+        {
+          name: 'SSHConnection__VM_ADMIN_USERNAME'
+          value: vmAdminUserName
+        }
+        {
+          name: 'SSHConnection__VM_ADMIN_PASSWORD'
+          value: vmAdminPassword
+        }
+        {
+          name: 'SSHConnection__VM_HOSTNAME'
+          value: vmHostName
         }
       ]
     }
