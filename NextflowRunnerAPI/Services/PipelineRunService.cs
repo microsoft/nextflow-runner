@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NextflowRunnerAPI.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NextflowRunnerAPI.Services
 {

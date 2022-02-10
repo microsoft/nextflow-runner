@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NextflowRunnerAPI;
 using NextflowRunnerAPI.Models;
 using NextflowRunnerAPI.Services;
-using Renci.SshNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +19,7 @@ builder.Services.AddScoped<IPipelineService, PipelineService>();
 builder.Services.AddScoped<IPipelineParamService, PipelineParamService>();
 builder.Services.AddScoped<IPipelineRunService, PipelineRunService>();
 
-builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseInMemoryDatabase("NextflowRunnerContext"));
+builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

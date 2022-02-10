@@ -1,5 +1,9 @@
-﻿namespace NextflowRunnerAPI.Models
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace NextflowRunnerAPI.Models
 {
+    [Table("PipelineRun")]
     public record PipelineRun
     {
         public int PipelineRunId { get; set; }

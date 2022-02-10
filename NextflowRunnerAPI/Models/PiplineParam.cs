@@ -1,5 +1,8 @@
-﻿namespace NextflowRunnerAPI.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace NextflowRunnerAPI.Models
 {
+    [Table("PipelineParam")]
     public record PipelineParam
     {
         public int PipelineParamId { get; set; }

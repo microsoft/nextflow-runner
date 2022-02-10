@@ -1,10 +1,14 @@
-﻿namespace NextflowRunnerAPI.Models
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace NextflowRunnerAPI.Models
 {
+    [Table("Pipeline")]
     public record Pipeline
     {
         public int PipelineId { get; set; }
         public string PipelineName { get; set; }
-        public string Description { get; set; } 
+        public string Description { get; set; }
         public string GitHubUrl { get; set; }
 
         public virtual ICollection<PipelineParam> PipelineParams { get; set; }
