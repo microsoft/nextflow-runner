@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NextflowRunnerAPI;
 using NextflowRunnerAPI.Models;
 using Renci.SshNet;
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<SSHConnectionOptions>(builder.Configuration.GetSection(SSHConnectionOptions.ConfigSection));
 
 builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -58,14 +61,13 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 })
 .WithName("UpdatePipeline");
 
-app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, NextflowRunnerContext db, IConfiguration config) =>
+app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
     await Task.Delay(0);
-
     throw new NotImplementedException();
-    //var pipeline = await pipelineService.GetPipelineAsync(pipelineId);
+    //var pipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    //var run = new PipelineRun 
+    //var run = new PipelineRun
     //{
     //    PipelineId = pipelineId,
     //    NextflowRunCommand = runCommand ?? "./nextflow ./hello/main.nf",
@@ -73,11 +75,24 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand,
     //    Status = "running" // what are statuses can nextflow have? do we need to extend with any of our own? define in a type table or an enum?
     //};
 
-    //pipeline.Runs.Add(run);
+    //pipeline.PipelineRuns ??= new List<PipelineRun>();
 
-    //using var client = new SshClient(config["SSHConnection:VM_ADMIN_HOSTNAME"], config["SSHConnection:VM_ADMIN_USERNAME"], config["SSHConnection:VM_ADMIN_PASSWORD"]);
+    //pipeline.PipelineRuns.Add(run);
+
+    //using var client = new SshClient(
+    //    sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
+    //    sshConnectionOptions.Value.VM_ADMIN_USERNAME,
+    //    sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
 
     //using var command = client.CreateCommand(run.NextflowRunCommand);
+
+    //command.Execute();
+
+    //using var reader = new StreamReader(command.OutputStream);
+
+    //var output = reader.ReadToEnd();
+
+    //return output;
 })
 .WithName("ExecutePipeline");
 
