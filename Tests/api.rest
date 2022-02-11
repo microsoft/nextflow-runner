@@ -1,0 +1,17 @@
+@host=https://hli6aqxtwj2yy-nf-runner-api.azurewebsites.net
+GET {{host}}/pipelines
+
+###
+
+POST {{host}}/pipelines
+Content-Type: application/json
+
+{
+    "PipelineName": "Phil Test Pipeline",
+    "Description": "This is a test pipeline",
+    "GitHubUrl": "https://github.com/pjirsa/sample"
+}
+
+###
+@pipelineId=1
+GET {{host}}/pipelines/{{pipelineId}}
