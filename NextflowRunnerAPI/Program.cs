@@ -26,15 +26,21 @@ app.MapGet("/pipelines", async (NextflowRunnerContext db) =>
 
 app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
 {
-    return await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines.FindAsync(pipelineId);
+
+    if (pipeline == null) return Results.NotFound();
+
+    return Results.Ok(pipeline);
 })
 .WithName("GetPipeline");
 
 app.MapPost("/pipelines", async ([FromBody] Pipeline pipeline, NextflowRunnerContext db) =>
 {
     db.Pipelines.Add(pipeline);
+
     await db.SaveChangesAsync();
-    return pipeline;
+
+    return Results.CreatedAtRoute("GetPipeline", new { pipelineId = pipeline.PipelineId }, pipeline);
 })
 .WithName("CreatePipeline");
 
@@ -48,9 +54,9 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
     await db.SaveChangesAsync();
 
-    return pipeline;
+    return Results.NoContent();
 })
-.WithDisplayName("UpdatePipeline");
+.WithName("UpdatePipeline");
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, NextflowRunnerContext db, IConfiguration config) =>
 {
@@ -79,11 +85,13 @@ app.MapDelete("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerCo
 {
     var dbPipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    if (dbPipeline == null) return;
+    if (dbPipeline == null) return Results.NotFound();
 
     db.Pipelines.Remove(dbPipeline);
 
     await db.SaveChangesAsync();
+
+    return Results.NoContent();
 })
 .WithName("DeletePipeline");
 
@@ -98,7 +106,11 @@ app.MapGet("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, Next
 
 app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (int pipelineId, int pipelineParamId, NextflowRunnerContext db) =>
 {
-    return await db.PipelineParams.FindAsync(pipelineParamId);
+    var pipelineParam = await db.PipelineParams.FindAsync(pipelineParamId);
+
+    if(pipelineParam == null) return Results.NotFound();
+
+    return Results.Ok(pipelineParam);
 })
 .WithName("GetPipelineParam");
 
@@ -106,7 +118,7 @@ app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [Fr
 {
     var pipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    if (pipeline == null) return null;
+    if (pipeline == null) return Results.NotFound();
 
     pipeline.PipelineParams ??= new List<PipelineParam>();
 
@@ -114,7 +126,7 @@ app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [Fr
 
     await db.SaveChangesAsync();
 
-    return pipelineParam;
+    return Results.CreatedAtRoute("GetPipelineParam", new { pipelineId = pipelineId, pipelineParamId = pipelineParam.PipelineParamId }, pipelineParam);
 })
 .WithName("CreatePipelineParam");
 
@@ -122,25 +134,27 @@ app.MapPut("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 {
     var dbPipelineParam = await db.PipelineParams.FindAsync(pipelineParam.PipelineParamId);
 
-    if (dbPipelineParam == null) return null;
+    if (dbPipelineParam == null) return Results.NotFound();
 
     dbPipelineParam = pipelineParam;
 
     await db.SaveChangesAsync();
 
-    return pipelineParam;
+    return Results.NoContent();
 })
-.WithDisplayName("UpdatePipelineParam");
+.WithName("UpdatePipelineParam");
 
 app.MapDelete("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (int pipelineId, int pipelineParamId, NextflowRunnerContext db) =>
 {
     var dbPipelineParam = await db.PipelineParams.FindAsync(pipelineParamId);
 
-    if (dbPipelineParam == null) return;
+    if (dbPipelineParam == null) return Results.NotFound();
 
     db.PipelineParams.Remove(dbPipelineParam);
 
     await db.SaveChangesAsync();
+
+    return Results.NoContent();
 })
 .WithName("DeletePipelineParam");
 
@@ -155,7 +169,11 @@ app.MapGet("/pipelines/{pipelineId}/pipelineruns", async (int pipelineId, Nextfl
 
 app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, NextflowRunnerContext db) =>
 {
-    return await db.PipelineRuns.FindAsync(pipelineRunId);
+    var pipelineRun = await db.PipelineRuns.FindAsync(pipelineRunId);
+
+    if(pipelineRun == null) return Results.NotFound();
+
+    return Results.Ok(pipelineRun);
 })
 .WithName("GetPipelineRun");
 
@@ -163,7 +181,7 @@ app.MapPost("/pipelines/{pipelineId}/pipelineruns", async (int pipelineId, [From
 {
     var pipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    if (pipeline == null) return null;
+    if (pipeline == null) return Results.NotFound();
 
     pipeline.PipelineRuns ??= new List<PipelineRun>();
 
@@ -171,7 +189,7 @@ app.MapPost("/pipelines/{pipelineId}/pipelineruns", async (int pipelineId, [From
 
     await db.SaveChangesAsync();
 
-    return pipelineRun;
+    return Results.CreatedAtRoute("GetPipelineRun", new { pipelineId = pipelineId, pipelineRunId = pipelineRun.PipelineRunId }, pipelineRun);
 })
 .WithName("CreatePipelineRun");
 
@@ -179,25 +197,27 @@ app.MapPut("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pi
 {
     var dbPipelineRun = await db.PipelineRuns.FindAsync(pipelineRun.PipelineRunId);
 
-    if (dbPipelineRun == null) return null;
+    if (dbPipelineRun == null) return Results.NotFound();
 
     dbPipelineRun = pipelineRun;
 
     await db.SaveChangesAsync();
 
-    return pipelineRun;
+    return Results.NoContent();
 })
-.WithDisplayName("UpdatePipelineRun");
+.WithName("UpdatePipelineRun");
 
 app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, NextflowRunnerContext db) =>
 {
     var dbPipelineRun = await db.PipelineRuns.FindAsync(pipelineRunId);
 
-    if (dbPipelineRun == null) return;
+    if (dbPipelineRun == null) return Results.NotFound();
 
     db.PipelineRuns.Remove(dbPipelineRun);
 
     await db.SaveChangesAsync();
+
+    return Results.NoContent();
 })
 .WithName("DeletePipelineRun");
 
