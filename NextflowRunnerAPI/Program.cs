@@ -61,38 +61,63 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 })
 .WithName("UpdatePipeline");
 
-app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
+app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
-    await Task.Delay(0);
-    throw new NotImplementedException();
     //var pipeline = await db.Pipelines.FindAsync(pipelineId);
+
+    //var commandStr = "nextflow";
+
+    //// for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
+    //// for now, we're repurposing github url string as the folder until we can automate fetching of the files
+    //var filename = $" {pipeline.GitHubUrl}";
+
+    //commandStr += filename;
+
+    //if (pipeline.PipelineParams != null)
+    //    foreach (var param in pipeline.PipelineParams)
+    //    {
+    //        var value = formParams[param.PipelineParamId] ?? param.DefaultValue;
+
+    //        // todo: santize
+
+    //        commandStr += $" --{param.ParamName} {value}";
+    //    }
 
     //var run = new PipelineRun
     //{
     //    PipelineId = pipelineId,
-    //    NextflowRunCommand = runCommand ?? "./nextflow ./hello/main.nf",
+    //    NextflowRunCommand = commandStr,
     //    RunDateTime = DateTime.UtcNow, // now vs utc now?
     //    Status = "running" // what are statuses can nextflow have? do we need to extend with any of our own? define in a type table or an enum?
     //};
+
+    //// running, failed, succeeded
 
     //pipeline.PipelineRuns ??= new List<PipelineRun>();
 
     //pipeline.PipelineRuns.Add(run);
 
-    //using var client = new SshClient(
-    //    sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
-    //    sshConnectionOptions.Value.VM_ADMIN_USERNAME,
-    //    sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
+    //await db.SaveChangesAsync();
 
-    //using var command = client.CreateCommand(run.NextflowRunCommand);
+    using var client = new SshClient(
+        sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
+        sshConnectionOptions.Value.VM_ADMIN_USERNAME,
+        sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
 
-    //command.Execute();
+    client.Connect();
 
-    //using var reader = new StreamReader(command.OutputStream);
+    using var command = client.CreateCommand("/bin/nextflow -h");
+    //using var command = client.CreateCommand(run.commandStr);
 
-    //var output = reader.ReadToEnd();
+    // update run entry with status
 
-    //return output;
+    var output = command.Execute();
+
+    client.Disconnect();
+
+    // todo: output to azure storage
+
+    return output;
 })
 .WithName("ExecutePipeline");
 
@@ -123,7 +148,7 @@ app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 {
     var pipelineParam = await db.PipelineParams.FindAsync(pipelineParamId);
 
-    if(pipelineParam == null) return Results.NotFound();
+    if (pipelineParam == null) return Results.NotFound();
 
     return Results.Ok(pipelineParam);
 })
@@ -186,7 +211,7 @@ app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pi
 {
     var pipelineRun = await db.PipelineRuns.FindAsync(pipelineRunId);
 
-    if(pipelineRun == null) return Results.NotFound();
+    if (pipelineRun == null) return Results.NotFound();
 
     return Results.Ok(pipelineRun);
 })
