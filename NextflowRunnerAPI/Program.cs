@@ -63,41 +63,39 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
-    //var pipeline = await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    //var commandStr = "nextflow";
+    var commandStr = "nextflow";
 
-    //// for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
-    //// for now, we're repurposing github url string as the folder until we can automate fetching of the files
-    //var filename = $" {pipeline.GitHubUrl}";
+    // for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
+    // for now, we're repurposing github url string as the folder until we can automate fetching of the files
+    var filename = $" {pipeline.GitHubUrl}";
 
-    //commandStr += filename;
+    commandStr += filename;
 
-    //if (pipeline.PipelineParams != null)
-    //    foreach (var param in pipeline.PipelineParams)
-    //    {
-    //        var value = formParams[param.PipelineParamId] ?? param.DefaultValue;
+    if (pipeline.PipelineParams != null)
+        foreach (var param in pipeline.PipelineParams)
+        {
+            var value = formParams[param.PipelineParamId] ?? param.DefaultValue;
 
-    //        // todo: santize
+            // todo: santize
 
-    //        commandStr += $" --{param.ParamName} {value}";
-    //    }
+            commandStr += $" --{param.ParamName} {value}";
+        }
 
-    //var run = new PipelineRun
-    //{
-    //    PipelineId = pipelineId,
-    //    NextflowRunCommand = commandStr,
-    //    RunDateTime = DateTime.UtcNow, // now vs utc now?
-    //    Status = "running" // what are statuses can nextflow have? do we need to extend with any of our own? define in a type table or an enum?
-    //};
+    var run = new PipelineRun
+    {
+        PipelineId = pipelineId,
+        NextflowRunCommand = commandStr,
+        RunDateTime = DateTime.UtcNow, // now vs utc now?
+        Status = "running" // todo: status = running, failed, succeeded
+    };
 
-    //// running, failed, succeeded
+    pipeline.PipelineRuns ??= new List<PipelineRun>();
 
-    //pipeline.PipelineRuns ??= new List<PipelineRun>();
+    pipeline.PipelineRuns.Add(run);
 
-    //pipeline.PipelineRuns.Add(run);
-
-    //await db.SaveChangesAsync();
+    await db.SaveChangesAsync();
 
     using var client = new SshClient(
         sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
@@ -106,8 +104,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, s
 
     client.Connect();
 
-    using var command = client.CreateCommand("/bin/nextflow -h");
-    //using var command = client.CreateCommand(run.commandStr);
+    using var command = client.CreateCommand(run.NextflowRunCommand);
 
     // update run entry with status
 
