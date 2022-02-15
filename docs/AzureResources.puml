@@ -1,0 +1,35 @@
+@startuml nextflow-runner
+footer Nextflow Azure Plant-UML
+scale max 1024 width
+skinparam linetype polyline
+skinparam nodesep 20
+skinparam ranksep 20
+
+' Azure
+!define AzurePuml https://raw.githubusercontent.com/RicardoNiepel/Azure-PlantUML/release/2-1/dist
+!includeurl AzurePuml/AzureCommon.puml
+!includeurl AzurePuml/Databases/all.puml
+!includeurl AzurePuml/Compute/AzureAppService.puml
+!includeurl AzurePuml/Compute/AzureBatch.puml
+!includeurl AzurePuml/Compute/AzureVirtualMachine.puml
+!includeurl AzurePuml/Storage/AzureBlobStorage.puml
+!include ./puml/Github.puml
+
+AzureAppService(app, "App Service", "Nextflow Runner API")
+AzureBatch(batch, "Batch Account", "nf-azure")
+AzureSqlDatabase(sql, "SQL", "Nextflow Runner DB")
+AzureVirtualMachine(vm, "Linux VM", "Nextflow Runner VM")
+AzureBlobStorage(blobinput, "Blob Storage", "Nextflow Runner Input")
+AzureBlobStorage(bloboutput, "Blob Storage", "Nextflow Runner Output")
+GitHub(github, "GitHub", "Nextflow Workflow")
+
+sql -> app
+app -> vm : SSH
+vm -> batch : nextflow
+blobinput --> batch
+batch --> bloboutput
+github --> vm : main.nf
+
+'listsprites
+
+@enduml
