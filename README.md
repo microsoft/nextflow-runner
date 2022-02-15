@@ -1,7 +1,7 @@
 # Nextflow Cloud Runner
 Run a Nextflow pipeline in the cloud
 
-![Diagram of cloud resources deployed by project](./docs/imgs/AzureResources.png)
+![Diagram of cloud resources deployed by project](./docs/imgs/nextflow-runner.png)
 
 ## Contributing
 
