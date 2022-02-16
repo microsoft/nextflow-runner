@@ -9,6 +9,21 @@ All output is stored in an Azure storage account and can be downloaded for furth
 ## Why?
 Nextflow is a commonly used workflow manager in the scientific community. By providing  a sandox type environment for users, users can quickly validate their data and generate data for further analysis without having to learn or configure nextflow jobs.
 
+### Bio-informaticians
+* Quickly get started with Nextflow on Azure.
+* BYOD - Use preconfigured pipelines to experiment common pipelines with your data.
+* All intermediate results are automatically tracked
+* Output is available in Azure Storage for review
+* Open-source community with available samples for most common pipelines.
+
+
+### Operations teams
+* Nothing to deploy
+* Use Azure auto-scaling compute
+* Use Azure Storage for maximum throughput and scalability and tighter access control using ACLs.
+* Use Azure PaaS services to automate deployment and monitor progress.
+
+
 # Getting started
 
 ## Nextflow Cloud Runner
