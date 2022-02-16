@@ -1,0 +1,12 @@
+﻿@page "/execute/{Id:int}"
+<div>
+    <h2>Pipeline ID: @Id </h2>
+    @if(SUBMITTED)
+    {
+        <h2>Submited</h2>
+    }
+    else
+    {
+        <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button> 
+    }
+</div>
