@@ -14,10 +14,17 @@ builder.Services.Configure<SSHConnectionOptions>(builder.Configuration.GetSectio
 
 builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(o =>
+    o.AddDefaultPolicy(b =>
+        b.AllowAnyHeader()
+        .AllowAnyOrigin()
+        .AllowAnyMethod()));
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors();
 app.UseHttpsRedirection();
 
 #region Pipelines

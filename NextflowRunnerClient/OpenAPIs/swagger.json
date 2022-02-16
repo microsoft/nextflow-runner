@@ -1,0 +1,592 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "NextflowRunnerAPI",
+    "version": "1.0"
+  },
+  "paths": {
+    "/pipelines": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipelines",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pipeline"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "CreatePipeline",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pipeline"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pipelines/{pipelineId}": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipeline",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "UpdatePipeline",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pipeline"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "ExecutePipeline",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "runCommand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "DeletePipeline",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pipelines/{pipelineId}/pipelineparams": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipelineParams",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PipelineParam"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "CreatePipelineParam",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineParam"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipelineParam",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineParamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "UpdatePipelineParam",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineParamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineParam"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "DeletePipelineParam",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineParamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pipelines/{pipelineId}/pipelineruns": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipelineRuns",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PipelineRun"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "CreatePipelineRun",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineRun"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}": {
+      "get": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "GetPipelineRun",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineRunId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "UpdatePipelineRun",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineRunId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineRun"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "NextflowRunnerAPI"
+        ],
+        "operationId": "DeletePipelineRun",
+        "parameters": [
+          {
+            "name": "pipelineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pipelineRunId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pipeline": {
+        "type": "object",
+        "properties": {
+          "pipelineId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pipelineName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "gitHubUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "pipelineParams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineParam"
+            },
+            "nullable": true
+          },
+          "pipelineRuns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineRun"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PipelineParam": {
+        "type": "object",
+        "properties": {
+          "pipelineParamId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pipelineId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paramName": {
+            "type": "string",
+            "nullable": true
+          },
+          "paramType": {
+            "type": "string",
+            "nullable": true
+          },
+          "paramExample": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultValue": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PipelineRun": {
+        "type": "object",
+        "properties": {
+          "pipelineRunId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pipelineId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextflowRunCommand": {
+            "type": "string",
+            "nullable": true
+          },
+          "runDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

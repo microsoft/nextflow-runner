@@ -1,0 +1,19 @@
+﻿@page "/pipelines"
+@using NextflowRunnerClient.Components;
+
+<h2>Available Pipelines</h2>
+@if (Errors.Length > 0)
+{
+    <h1>Error</h1>
+    <h2>@Errors</h2>
+}
+@if(Pipelines.Count < 1)
+{
+    <h3>Loading....</h3>
+}else{
+    @foreach (var pipeline in Pipelines)
+    {
+        <Pipeline Pline=@pipeline/>
+    }
+}
+
