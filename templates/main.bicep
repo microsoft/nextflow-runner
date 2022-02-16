@@ -16,6 +16,10 @@ param sqlAdminPassword string
 @secure()
 param vmAdminPassword string
 
+@secure()
+@description('Github token for static web app deployment')
+param repositoryToken string
+
 @allowed([
   'nonprod'
   'prod'
@@ -44,7 +48,7 @@ module batch 'modules/batchservice.bicep' = {
 }
 
 module appService 'modules/appservice.bicep' = {
-  name: 'hackAPI-appservice'
+  name: 'nextflow-runner-appservice'
   params: {
     environmentType: environmentType
     location: location
@@ -54,6 +58,15 @@ module appService 'modules/appservice.bicep' = {
     vmAdminUserName: vmAdminUserName
     vmAdminPassword: vmAdminPassword
     vmHostName: vmHostName
+  }
+}
+
+module clientApp 'modules/staticsite.bicep' = {
+  name: 'nextflow-runner-client'
+  params: {
+    swaSiteName: 'name'
+    location: location
+    repositoryToken: repositoryToken
   }
 }
 
