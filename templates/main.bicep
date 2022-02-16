@@ -64,7 +64,6 @@ module appService 'modules/appservice.bicep' = {
 module clientApp 'modules/staticsite.bicep' = {
   name: 'nextflow-runner-client'
   params: {
-    swaSiteName: 'name'
     location: location
     repositoryToken: repositoryToken
   }
