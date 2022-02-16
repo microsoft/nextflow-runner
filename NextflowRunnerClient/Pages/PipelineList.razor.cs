@@ -17,7 +17,9 @@ namespace NextflowRunnerClient.Pages
         {
             try
             {
-                Pipelines = (List<Pipeline>)await NfAPI.GetPipelinesAsync();
+                var pipelineCollection = await NfAPI.GetPipelinesAsync();
+
+                Pipelines = pipelineCollection.ToList();
             }catch (ApiException ae)
             {
                 Errors = ae.Message;
