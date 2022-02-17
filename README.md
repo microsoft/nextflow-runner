@@ -1,7 +1,45 @@
-# Nextflow Cloud Runner
+
+# Introduction
+
+## What?
+A lightweight application designed to allow users to run Nextflow jobs without setting up Nextflow on Azure. It allows users to bring their own data, select from a list of preconfigured pipelines and execute a pipeline.
+
+All output is stored in an Azure storage account and can be downloaded for further downstream processing.
+
+## Why?
+Nextflow is a commonly used workflow manager in the scientific community. By providing  a sandox type environment for users, users can quickly validate their data and generate data for further analysis without having to learn or configure nextflow jobs.
+
+### Bio-informaticians
+* Quickly get started with Nextflow on Azure.
+* BYOD - Use preconfigured pipelines to experiment common pipelines with your data.
+* All intermediate results are automatically tracked
+* Output is available in Azure Storage for review
+* Open-source community with available samples for most common pipelines.
+
+
+### Operations teams
+* Nothing to deploy
+* Use Azure auto-scaling compute
+* Use Azure Storage for maximum throughput and scalability and tighter access control using ACLs.
+* Use Azure PaaS services to automate deployment and monitor progress.
+
+
+# Getting started
+
+## Nextflow Cloud Runner
 Run a Nextflow pipeline in the cloud
 
 ![Diagram of cloud resources deployed by project](./docs/imgs/nextflow-runner.png)
+
+## Requirements
+This project has three parts, a database project, an Minimal API project, and a Blazor UI application. We've also included the necessary bicept templates to create and deploy the resources on Azure.
+
+## Running locally
+You can download and run the projects locally, .NET 6.0 is required.
+
+## Running on Azure
+You can use the provided bicep templates to deploy and run on Azure.
+
 
 ## Contributing
 
