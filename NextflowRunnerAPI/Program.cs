@@ -31,7 +31,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/pipelines", async (NextflowRunnerContext db) =>
 {
-    return await db.Pipelines.ToListAsync();
+        return await db.Pipelines.ToListAsync();
 }).WithName("GetPipelines");
 
 app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
@@ -46,6 +46,9 @@ app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerConte
 
 app.MapPost("/pipelines", async ([FromBody] Pipeline pipeline, NextflowRunnerContext db) =>
 {
+    pipeline.PipelineParams ??= new List<PipelineParam>();
+    pipeline.PipelineRuns = new List<PipelineRun>();
+
     db.Pipelines.Add(pipeline);
 
     await db.SaveChangesAsync();
@@ -60,7 +63,9 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
     if (dbPipeline == null) return null;
 
-    dbPipeline = pipeline;
+    dbPipeline.PipelineName = pipeline.PipelineName;
+    dbPipeline.Description = pipeline.Description;
+    dbPipeline.GitHubUrl = pipeline.GitHubUrl;
 
     await db.SaveChangesAsync();
 
@@ -68,38 +73,72 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 })
 .WithName("UpdatePipeline");
 
-app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, string runCommand, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
+app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
-    await Task.Delay(0);
-    throw new NotImplementedException();
-    //var pipeline = await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines.FindAsync(pipelineId);
 
-    //var run = new PipelineRun
-    //{
-    //    PipelineId = pipelineId,
-    //    NextflowRunCommand = runCommand ?? "./nextflow ./hello/main.nf",
-    //    RunDateTime = DateTime.UtcNow, // now vs utc now?
-    //    Status = "running" // what are statuses can nextflow have? do we need to extend with any of our own? define in a type table or an enum?
-    //};
+    var commandStr = "/home/azureuser/tools/nextflow";
 
-    //pipeline.PipelineRuns ??= new List<PipelineRun>();
+    // for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
+    // for now, we're repurposing github url string as the folder until we can automate fetching of the files
+    var filename = $" {pipeline.GitHubUrl}";
 
-    //pipeline.PipelineRuns.Add(run);
+    commandStr += filename;
 
-    //using var client = new SshClient(
-    //    sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
-    //    sshConnectionOptions.Value.VM_ADMIN_USERNAME,
-    //    sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
+    if (pipeline.PipelineParams != null)
+        foreach (var param in pipeline.PipelineParams)
+        {
+            var value = formParams[param.PipelineParamId] ?? param.DefaultValue;
 
-    //using var command = client.CreateCommand(run.NextflowRunCommand);
+            var sanitizedValue = value.ReplaceLineEndings();
 
-    //command.Execute();
+            commandStr += $" --{param.ParamName} {sanitizedValue}";
+        }
 
-    //using var reader = new StreamReader(command.OutputStream);
+    var run = new PipelineRun
+    {
+        PipelineId = pipelineId,
+        NextflowRunCommand = commandStr,
+        RunDateTime = DateTime.UtcNow,
+        Status = RunStatus.Running.ToString()
+    };
 
-    //var output = reader.ReadToEnd();
+    pipeline.PipelineRuns ??= new List<PipelineRun>();
 
-    //return output;
+    pipeline.PipelineRuns.Add(run);
+
+    await db.SaveChangesAsync();
+
+    using var client = new SshClient(
+        sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
+        sshConnectionOptions.Value.VM_ADMIN_USERNAME,
+        sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
+
+    client.Connect();
+
+    using var command = client.CreateCommand(run.NextflowRunCommand);
+
+    var output = command.Execute();
+
+    /*
+        for long running remote operations, how do we
+        - call non-blocking
+        - provide a status to the user immediately
+        - update the status on completion
+     */
+
+    // todo: parse command output for meaningful status
+    run.Status = RunStatus.Succeeded.ToString();
+
+    // todo: deal with output params..
+
+    await db.SaveChangesAsync();
+
+    client.Disconnect();
+
+    // todo: output to azure storage
+
+    return output;
 })
 .WithName("ExecutePipeline");
 
@@ -158,7 +197,10 @@ app.MapPut("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 
     if (dbPipelineParam == null) return Results.NotFound();
 
-    dbPipelineParam = pipelineParam;
+    dbPipelineParam.ParamName = pipelineParam.ParamName;
+    dbPipelineParam.ParamType = pipelineParam.ParamType;
+    dbPipelineParam.DefaultValue = pipelineParam.DefaultValue;
+    dbPipelineParam.ParamExample = pipelineParam.ParamExample;
 
     await db.SaveChangesAsync();
 
