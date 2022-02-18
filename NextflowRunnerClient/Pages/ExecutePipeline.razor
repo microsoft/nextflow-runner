@@ -6,13 +6,9 @@
     {
         <h2>Submited</h2>
     }
-    
         @foreach (var p in Params)
         {
             <PipelineParam ParamValue=@ParamValue[p.PipelineId.ToString()] Param=p/>
         }    
-
         <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
-
-    
 </div>

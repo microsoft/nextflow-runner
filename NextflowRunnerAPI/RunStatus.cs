@@ -1,9 +1,8 @@
-﻿namespace NextflowRunner.API
+﻿namespace NextflowRunner.API;
+
+public enum RunStatus
 {
-    public enum RunStatus
-    {
-        Running,
-        Succeeded,
-        Failed
-    }
+    Running,
+    Succeeded,
+    Failed
 }

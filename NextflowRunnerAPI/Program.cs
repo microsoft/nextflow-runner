@@ -31,7 +31,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/pipelines", async (NextflowRunnerContext db) =>
 {
-        return await db.Pipelines.ToListAsync();
+    return await db.Pipelines.ToListAsync();
 }).WithName("GetPipelines");
 
 app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
@@ -75,7 +75,7 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
-    var pipeline = await db.Pipelines.Include(p=>p.PipelineParams).FirstOrDefaultAsync(p=>p.PipelineId==pipelineId);
+    var pipeline = await db.Pipelines.Include(p => p.PipelineParams).FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
     var commandStr = "/home/azureuser/tools/nextflow";
 
@@ -169,7 +169,7 @@ app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 {
     var pipelineParam = await db.PipelineParams.FindAsync(pipelineParamId);
 
-    if(pipelineParam == null) return Results.NotFound();
+    if (pipelineParam == null) return Results.NotFound();
 
     return Results.Ok(pipelineParam);
 })
@@ -235,7 +235,7 @@ app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pi
 {
     var pipelineRun = await db.PipelineRuns.FindAsync(pipelineRunId);
 
-    if(pipelineRun == null) return Results.NotFound();
+    if (pipelineRun == null) return Results.NotFound();
 
     return Results.Ok(pipelineRun);
 })

@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NextflowRunner.API.Models
+namespace NextflowRunner.API.Models;
+
+[Table("PipelineParam")]
+public record PipelineParam
 {
-    [Table("PipelineParam")]
-    public record PipelineParam
-    {
-        public int PipelineParamId { get; set; }
-        public int PipelineId { get; set; }
-        public string ParamName { get; set; }
-        public string ParamType { get; set; }
-        public string ParamExample { get; set; }
-        public string DefaultValue { get; set; }
-    }
+    public int PipelineParamId { get; set; }
+    public int PipelineId { get; set; }
+    public string ParamName { get; set; }
+    public string ParamType { get; set; }
+    public string ParamExample { get; set; }
+    public string DefaultValue { get; set; }
 }
