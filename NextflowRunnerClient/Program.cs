@@ -1,13 +1,5 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NextflowRunnerClient.Services;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NextflowRunnerClient
 {
@@ -20,7 +12,7 @@ namespace NextflowRunnerClient
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             
-            builder.Services.AddScoped<NextflowAPI>(sp => new NextflowAPI(
+            builder.Services.AddScoped(sp => new NextflowAPI(
                 builder.Configuration["NextflowRunnerAPI"],
                 new HttpClient()
                 ));

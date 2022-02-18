@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using NextflowRunnerClient.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NextflowRunnerClient.Pages
 {
