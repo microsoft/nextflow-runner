@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NextflowRunnerClient.Components
 {
     public partial class Pipeline
     {
         [Parameter]
-        public NextflowRunnerClient.Services.Pipeline Pline { get; set; } = null;
+        [NotNull]
+        public NextflowRunnerClient.Services.Pipeline? Pline { get; set; } = null;
         
     }
 }

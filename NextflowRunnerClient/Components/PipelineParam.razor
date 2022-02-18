@@ -1,0 +1,15 @@
+﻿<div>
+    <EditForm class="col-form-label" Model="@ParamValue" >
+   
+    <div class="form-group">
+      
+      <label class="col-form-label">@Param.ParamName</label>
+      <InputText id="value" @onblur=ValidateParam @onkeypress=ValidateParam @bind-Value="@ParamValue" required />
+      <small class="form-text text-muted">@Param.ParamExample</small>
+            @if (!Valid)
+            {
+                <span class="alert-warning">Required</span>
+            }
+    </div>
+    </EditForm>
+</div>
