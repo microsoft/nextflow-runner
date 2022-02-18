@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NextflowRunnerAPI.Models;
+using NextflowRunner.API.Models;
 
-namespace NextflowRunnerAPI
+namespace NextflowRunner.API
 {
     public class NextflowRunnerContext : DbContext
     {

@@ -1,4 +1,4 @@
-﻿namespace NextflowRunnerAPI.Models
+﻿namespace NextflowRunner.API.Models
 {
     public class SSHConnectionOptions
     {

@@ -1,4 +1,4 @@
-﻿namespace NextflowRunnerAPI
+﻿namespace NextflowRunner.API
 {
     public enum RunStatus
     {
