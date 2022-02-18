@@ -75,7 +75,7 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
-    var pipeline = await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines.Include(p=>p.PipelineParams).FirstOrDefaultAsync(p=>p.PipelineId==pipelineId);
 
     var commandStr = "/home/azureuser/tools/nextflow";
 
