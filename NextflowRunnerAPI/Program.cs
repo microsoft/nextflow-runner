@@ -31,12 +31,18 @@ app.UseHttpsRedirection();
 
 app.MapGet("/pipelines", async (NextflowRunnerContext db) =>
 {
-    return await db.Pipelines.ToListAsync();
+    return await db.Pipelines
+        .Include(p => p.PipelineParams)
+        .Include(p => p.PipelineRuns)
+        .ToListAsync();
 }).WithName("GetPipelines");
 
 app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
 {
-    var pipeline = await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines
+        .Include(p => p.PipelineParams)
+        .Include(p => p.PipelineRuns)
+        .FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
     if (pipeline == null) return Results.NotFound();
 
@@ -61,7 +67,7 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 {
     var dbPipeline = await db.Pipelines.FindAsync(pipeline.PipelineId);
 
-    if (dbPipeline == null) return null;
+    if (dbPipeline == null) return Results.NotFound();
 
     dbPipeline.PipelineName = pipeline.PipelineName;
     dbPipeline.Description = pipeline.Description;
@@ -77,7 +83,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, s
 {
     var pipeline = await db.Pipelines.Include(p => p.PipelineParams).FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
-    var commandStr = "/home/azureuser/tools/nextflow";
+    var commandStr = "/home/azureuser/tools/nextflow run";
 
     // for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
     // for now, we're repurposing github url string as the folder until we can automate fetching of the files
@@ -177,7 +183,9 @@ app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 
 app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [FromBody] PipelineParam pipelineParam, NextflowRunnerContext db) =>
 {
-    var pipeline = await db.Pipelines.FindAsync(pipelineId);
+    var pipeline = await db.Pipelines
+        .Include(p => p.PipelineParams)
+        .FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
     if (pipeline == null) return Results.NotFound();
 
@@ -240,36 +248,6 @@ app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pi
     return Results.Ok(pipelineRun);
 })
 .WithName("GetPipelineRun");
-
-app.MapPost("/pipelines/{pipelineId}/pipelineruns", async (int pipelineId, [FromBody] PipelineRun pipelineRun, NextflowRunnerContext db) =>
-{
-    var pipeline = await db.Pipelines.FindAsync(pipelineId);
-
-    if (pipeline == null) return Results.NotFound();
-
-    pipeline.PipelineRuns ??= new List<PipelineRun>();
-
-    pipeline.PipelineRuns.Add(pipelineRun);
-
-    await db.SaveChangesAsync();
-
-    return Results.CreatedAtRoute("GetPipelineRun", new { pipelineId = pipelineId, pipelineRunId = pipelineRun.PipelineRunId }, pipelineRun);
-})
-.WithName("CreatePipelineRun");
-
-app.MapPut("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, [FromBody] PipelineRun pipelineRun, NextflowRunnerContext db) =>
-{
-    var dbPipelineRun = await db.PipelineRuns.FindAsync(pipelineRun.PipelineRunId);
-
-    if (dbPipelineRun == null) return Results.NotFound();
-
-    dbPipelineRun = pipelineRun;
-
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
-})
-.WithName("UpdatePipelineRun");
 
 app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, NextflowRunnerContext db) =>
 {
