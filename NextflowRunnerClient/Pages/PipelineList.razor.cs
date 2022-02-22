@@ -23,7 +23,5 @@ public partial class PipelineList
         {
             Errors = ae.Message;
         }
-
-
     }
 }
