@@ -1,12 +1,28 @@
-﻿<div class="card">
+﻿@using NextflowRunnerClient.Services
+<div class="card">
     <div class="card-header">
-        @Pline.PipelineName
-        <a href="/execute/@Pline.PipelineId">Execute</a>
+        <h5 class="card-title">@Pline.PipelineName</h5>
     </div>
-    <p>
-        @Pline.Description
-    </p>
+    <div>
+    </div>
+    <div class="card-body">
+        <p>
+            @Pline.GitHubUrl
+        </p>
+        <p class="card-text">
+            @Pline.Description
+        </p>
+        @if (Pline.PipelineRuns != null && Pline.PipelineRuns.Any())
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var run in Pline.PipelineRuns?.OrderByDescending(r => r.RunDateTime)?.Take(3).ToList() ?? new List<PipelineRun>())
+                {
+                    <li class="list-group-item">@run.RunDateTime.ToString("g") - @run.Status</li>
+                }
+            </ul>
+        }
+    </div>
     <div class="card-footer">
-        @Pline.GitHubUrl
+        <a class="btn btn-primary" href="/execute/@Pline.PipelineId">Execute</a>
     </div>
 </div>

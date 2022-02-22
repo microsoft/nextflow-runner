@@ -9,12 +9,16 @@
 }
 @if (Pipelines.Count < 1)
 {
-    <h3>Loading....</h3>
+    <div class="spinner-border text-primary" role="status"></div>
 }
 else
 {
-    @foreach (var pipeline in Pipelines)
-    {
-        <Pipeline Pline=@pipeline />
-    }
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var pipeline in Pipelines)
+        {
+            <div class="col">
+                <Pipeline Pline=@pipeline />
+            </div>
+        }
+    </div>
 }
