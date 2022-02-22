@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "NextflowRunnerAPI": {
+    "NextflowRunner.API": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

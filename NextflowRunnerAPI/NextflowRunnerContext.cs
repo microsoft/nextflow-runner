@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NextflowRunnerAPI.Models;
+using NextflowRunner.API.Models;
 
-namespace NextflowRunnerAPI
+namespace NextflowRunner.API;
+
+public class NextflowRunnerContext : DbContext
 {
-    public class NextflowRunnerContext : DbContext
-    {
-        public NextflowRunnerContext(DbContextOptions options) : base(options) { }
+    public NextflowRunnerContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<Pipeline> Pipelines { get; set; }
-        public DbSet<PipelineParam> PipelineParams { get; set; }
-        public DbSet<PipelineRun> PipelineRuns { get; set; }
-    }
+    public DbSet<Pipeline> Pipelines { get; set; }
+    public DbSet<PipelineParam> PipelineParams { get; set; }
+    public DbSet<PipelineRun> PipelineRuns { get; set; }
 }

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NextflowRunnerAPI;
-using NextflowRunnerAPI.Models;
+using NextflowRunner.API;
+using NextflowRunner.API.Models;
 using Renci.SshNet;
 
 var builder = WebApplication.CreateBuilder(args);

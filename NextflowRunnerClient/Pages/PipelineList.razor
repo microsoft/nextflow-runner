@@ -7,13 +7,14 @@
     <h1>Error</h1>
     <h2>@Errors</h2>
 }
-@if(Pipelines.Count < 1)
+@if (Pipelines.Count < 1)
 {
     <h3>Loading....</h3>
-}else{
+}
+else
+{
     @foreach (var pipeline in Pipelines)
     {
-        <Pipeline Pline=@pipeline/>
+        <Pipeline Pline=@pipeline />
     }
 }
-

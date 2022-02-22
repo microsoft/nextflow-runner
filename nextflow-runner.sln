@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSHConsoleDemo", "SSHConsoleDemo\SSHConsoleDemo.csproj", "{336D13D8-D65B-4BA3-BE2F-7136F77ABA9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextflowRunnerAPI", "NextflowRunnerAPI\NextflowRunnerAPI.csproj", "{C848DE9B-B1C8-40BF-A124-2863E3A9F1EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextflowRunner.API", "NextflowRunnerAPI\NextflowRunner.API.csproj", "{C848DE9B-B1C8-40BF-A124-2863E3A9F1EE}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "NextflowRunnerDB", "NextflowRunnerDB\NextflowRunnerDB.sqlproj", "{DB9F5AE3-F1C6-4EED-90F4-E86694722D0A}"
 EndProject
