@@ -8,7 +8,7 @@
     }
         @foreach (var p in Params)
         {
-            <PipelineParam ParamValue=@ParamValue[p.PipelineId.ToString()] Param=p/>
+            <PipelineParam Param=p/>
         }    
         <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
 </div>
