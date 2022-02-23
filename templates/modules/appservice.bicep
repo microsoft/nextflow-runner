@@ -3,6 +3,7 @@ param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
 param vmAdminUserName string
 param vmHostName string
+param weblogPostUrl string
 
 
 @allowed([
@@ -61,6 +62,10 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         {
           name: 'SSHConnection__VM_HOSTNAME'
           value: vmHostName
+        }
+        {
+          name: 'SSHConnection__WEBLOG_URL'
+          value: weblogPostUrl
         }
       ]
     }

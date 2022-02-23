@@ -11,6 +11,9 @@ param vmAdminUserName string = 'azureuser'
 param vmHostName string = '40.83.22.113'
 
 @secure()
+param weblogPostUrl string
+
+@secure()
 param sqlAdminPassword string
 
 @secure()
@@ -58,6 +61,7 @@ module appService 'modules/appservice.bicep' = {
     vmAdminUserName: vmAdminUserName
     vmAdminPassword: vmAdminPassword
     vmHostName: vmHostName
+    weblogPostUrl: weblogPostUrl
   }
 }
 
