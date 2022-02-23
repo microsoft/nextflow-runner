@@ -35,7 +35,9 @@ app.MapGet("/pipelines", async (NextflowRunnerContext db) =>
         .Include(p => p.PipelineParams)
         .Include(p => p.PipelineRuns)
         .ToListAsync();
-}).WithName("GetPipelines");
+})
+.Produces<List<Pipeline>>(StatusCodes.Status200OK)
+.WithName("GetPipelines");
 
 app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
 {
@@ -48,6 +50,8 @@ app.MapGet("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerConte
 
     return Results.Ok(pipeline);
 })
+.Produces<Pipeline>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("GetPipeline");
 
 app.MapPost("/pipelines", async ([FromBody] Pipeline pipeline, NextflowRunnerContext db) =>
@@ -61,6 +65,7 @@ app.MapPost("/pipelines", async ([FromBody] Pipeline pipeline, NextflowRunnerCon
 
     return Results.CreatedAtRoute("GetPipeline", new { pipelineId = pipeline.PipelineId }, pipeline);
 })
+.Produces<Pipeline>(StatusCodes.Status201Created)
 .WithName("CreatePipeline");
 
 app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline pipeline, NextflowRunnerContext db) =>
@@ -77,24 +82,26 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
     return Results.NoContent();
 })
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("UpdatePipeline");
 
-app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, string> formParams, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
+app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest execReq, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
     var pipeline = await db.Pipelines.Include(p => p.PipelineParams).FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
+    if (pipeline == null) return Results.NotFound();
+
     var commandStr = "/home/azureuser/tools/nextflow run";
 
-    // for mvp just use hardcoded pipeline file; potentially get from AZ Storage later?
-    // for now, we're repurposing github url string as the folder until we can automate fetching of the files
     var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += filename;
+    commandStr += $"{filename} -name {execReq.RunName} -bg";
 
     if (pipeline.PipelineParams != null)
         foreach (var param in pipeline.PipelineParams)
         {
-            var value = formParams[param.PipelineParamId] ?? param.DefaultValue;
+            var value = execReq.Parameters[param.PipelineParamId] ?? param.DefaultValue;
 
             var sanitizedValue = value.ReplaceLineEndings();
 
@@ -104,6 +111,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, s
     var run = new PipelineRun
     {
         PipelineId = pipelineId,
+        PipelineRunName = execReq.RunName,
         NextflowRunCommand = commandStr,
         RunDateTime = DateTime.UtcNow,
         Status = RunStatus.Running.ToString()
@@ -126,26 +134,12 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, IDictionary<int, s
 
     var output = command.Execute();
 
-    /*
-        for long running remote operations, how do we
-        - call non-blocking
-        - provide a status to the user immediately
-        - update the status on completion
-     */
-
-    // todo: parse command output for meaningful status
-    run.Status = RunStatus.Succeeded.ToString();
-
-    // todo: deal with output params..
-
-    await db.SaveChangesAsync();
-
     client.Disconnect();
 
-    // todo: output to azure storage
-
-    return output;
+    return Results.CreatedAtRoute("GetPipelineRun", new { pipelineId = pipeline.PipelineId, pipelineRunId = run.PipelineRunId }, run);
 })
+.Produces<PipelineRun>(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("ExecutePipeline");
 
 app.MapDelete("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerContext db) =>
@@ -160,6 +154,8 @@ app.MapDelete("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerCo
 
     return Results.NoContent();
 })
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("DeletePipeline");
 
 #endregion
@@ -168,8 +164,17 @@ app.MapDelete("/pipelines/{pipelineId}", async (int pipelineId, NextflowRunnerCo
 
 app.MapGet("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, NextflowRunnerContext db) =>
 {
-    return await db.PipelineParams.Where(p => p.PipelineId == pipelineId).ToListAsync();
-}).WithName("GetPipelineParams");
+    var pipeline = await db.Pipelines
+    .Include(p => p.PipelineParams)
+    .FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
+
+    if (pipeline == null) return Results.NotFound();
+
+    return Results.Ok(pipeline.PipelineParams);
+})
+.Produces<List<PipelineParam>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("GetPipelineParams");
 
 app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (int pipelineId, int pipelineParamId, NextflowRunnerContext db) =>
 {
@@ -179,6 +184,8 @@ app.MapGet("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 
     return Results.Ok(pipelineParam);
 })
+.Produces<PipelineParam>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("GetPipelineParam");
 
 app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [FromBody] PipelineParam pipelineParam, NextflowRunnerContext db) =>
@@ -197,6 +204,8 @@ app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [Fr
 
     return Results.CreatedAtRoute("GetPipelineParam", new { pipelineId = pipelineId, pipelineParamId = pipelineParam.PipelineParamId }, pipelineParam);
 })
+.Produces<PipelineParam>(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("CreatePipelineParam");
 
 app.MapPut("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (int pipelineId, int pipelineParamId, [FromBody] PipelineParam pipelineParam, NextflowRunnerContext db) =>
@@ -214,6 +223,8 @@ app.MapPut("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (in
 
     return Results.NoContent();
 })
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("UpdatePipelineParam");
 
 app.MapDelete("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async (int pipelineId, int pipelineParamId, NextflowRunnerContext db) =>
@@ -228,6 +239,8 @@ app.MapDelete("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async 
 
     return Results.NoContent();
 })
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("DeletePipelineParam");
 
 #endregion
@@ -236,8 +249,17 @@ app.MapDelete("/pipelines/{pipelineId}/pipelineparams/{pipelineParamId}", async 
 
 app.MapGet("/pipelines/{pipelineId}/pipelineruns", async (int pipelineId, NextflowRunnerContext db) =>
 {
-    return await db.PipelineRuns.Where(p => p.PipelineId == pipelineId).ToListAsync();
-}).WithName("GetPipelineRuns");
+    var pipeline = await db.Pipelines
+    .Include(p => p.PipelineRuns)
+    .FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
+
+    if (pipeline == null) return Results.NotFound();
+
+    return Results.Ok(pipeline.PipelineRuns);
+})
+.Produces<List<PipelineRun>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("GetPipelineRuns");
 
 app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, NextflowRunnerContext db) =>
 {
@@ -247,6 +269,8 @@ app.MapGet("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pi
 
     return Results.Ok(pipelineRun);
 })
+.Produces<PipelineRun>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("GetPipelineRun");
 
 app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int pipelineId, int pipelineRunId, NextflowRunnerContext db) =>
@@ -261,6 +285,8 @@ app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int
 
     return Results.NoContent();
 })
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound)
 .WithName("DeletePipelineRun");
 
 #endregion
