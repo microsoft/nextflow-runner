@@ -2,17 +2,26 @@
 @using NextflowRunnerClient.Components
 <div>
     <h2>Pipeline ID: @Id </h2>
-    @if(SUBMITTED)
+    @if (SUBMITTED)
     {
         <h2>Submited</h2>
     }
-    
-    <label class="col-form-label">Run Name</label>
-    <input readonly type="text" class="form-control" value=@ExecutionRequest.RunName />
+
+    <EditForm class="form" Model=@ExecutionRequest>
+        <label for="run-name">Run Name</label>
+
+        <div class="input-group">
+            <InputText class="form-control" id="run-name" @bind-Value=@ExecutionRequest.RunName />
+            <div class="input-group-append">
+                <span class="input-group-text" id="run-name">@RunNameUqEnd</span>
+            </div>
+        </div>
+    </EditForm>
 
     @foreach (var p in Params)
     {
-        <PipelineParam Param=p/>
-    }    
+        <PipelineParam Param=p />
+    }
+    <br />
     <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
 </div>
