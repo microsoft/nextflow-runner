@@ -1,0 +1,29 @@
+{
+  "trace": {
+    "task_id": 3,
+    "status": "SUBMITTED",
+    "hash": "f0/99d730",
+    "name": "sayHello (3)",
+    "exit": 2147483647,
+    "submit": 1645563498982,
+    "start": 0,
+    "process": "sayHello",
+    "tag": null,
+    "module": [],
+    "container": "quay.io/nextflow/bash",
+    "attempt": 1,
+    "script": "\n    echo 'Hello world!'\n    ",
+    "scratch": null,
+    "workdir": "/workspaces/hello/work/f0/99d7308d477989feeee61419f4805d",
+    "queue": null,
+    "cpus": 1,
+    "memory": null,
+    "disk": null,
+    "time": null,
+    "env": null
+  },
+  "runId": "1c573ab5-7b09-4a8b-af64-fe3815f46092",
+  "event": "process_submitted",
+  "runName": "myworkflow",
+  "utcTime": "2022-02-22T20:58:18Z"
+}
