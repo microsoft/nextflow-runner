@@ -96,7 +96,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += $"{filename} -name {execReq.RunName} -bg";
+    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{sshConnectionOptions.Value.WEBLOG_URL}\"";
 
     if (pipeline.PipelineParams != null)
         foreach (var param in pipeline.PipelineParams)

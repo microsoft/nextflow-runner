@@ -6,4 +6,5 @@ public class SSHConnectionOptions
     public string VM_ADMIN_HOSTNAME { get; set; } = string.Empty;
     public string VM_ADMIN_USERNAME { get; set; } = string.Empty;
     public string VM_ADMIN_PASSWORD { get; set; } = string.Empty;
+    public string WEBLOG_URL { get; set; } = string.Empty;
 }
