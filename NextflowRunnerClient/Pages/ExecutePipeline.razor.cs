@@ -1,47 +1,43 @@
 ﻿using Microsoft.AspNetCore.Components;
+using NextflowRunnerClient.Models;
 using NextflowRunnerClient.Services;
 
 namespace NextflowRunnerClient.Pages;
 
 public partial class ExecutePipeline
 {
-
     [Inject]
     NextflowAPI NfAPI { get; set; }
 
     [Parameter]
     public int Id { get; set; } = 0;
 
-    protected ICollection<Services.PipelineParam> Params { get; set; } = null;
-    protected Dictionary<string, string> ParamValue { get; set; } = new Dictionary<string, string>();
+    protected ICollection<ViewParam> Params { get; set; } = new List<ViewParam>();
+    protected ExecutionRequest ExecutionRequest { get; set; } = new() { RunName = Guid.NewGuid().ToString().Substring(0,6) };
     protected bool SUBMITTED { get; set; } = false;
     protected bool VALID { get; set; } = false;
 
     protected async override Task OnInitializedAsync()
     {
-        Params = await NfAPI.GetPipelineParamsAsync(Id);
-        ParamValue = Params.ToDictionary(p => p.PipelineParamId.ToString(), p => "");
+        var apiParams = await NfAPI.GetPipelineParamsAsync(Id);
 
+        Params = apiParams.Select(p => new ViewParam(p)).ToList();
     }
 
     public async void ExecuteJob()
     {
         SUBMITTED = true;
 
-        await NfAPI.ExecutePipelineAsync(Id, ParamValue);
+        ExecutionRequest.Parameters = Params
+            .ToDictionary(p => p.PipelineParamId.ToString(), p => p.Value);
 
-    }
-    public void ValidateParams()
-    {
-        VALID = true;
-        foreach (var pvalue in ParamValue)
+        // todo: revisit for updated api spec
+        try
         {
-            if (string.IsNullOrEmpty(pvalue.Value))
-            {
-                VALID = false;
-                return;
-            }
+            await NfAPI.ExecutePipelineAsync(Id, ExecutionRequest);
+        } catch (Exception ex)
+        {
+            throw ex;
         }
-
     }
 }

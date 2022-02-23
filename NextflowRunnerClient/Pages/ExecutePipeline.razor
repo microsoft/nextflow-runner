@@ -6,9 +6,13 @@
     {
         <h2>Submited</h2>
     }
-        @foreach (var p in Params)
-        {
-            <PipelineParam ParamValue=@ParamValue[p.PipelineId.ToString()] Param=p/>
-        }    
-        <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
+    
+    <label class="col-form-label">Run Name</label>
+    <input readonly type="text" class="col-form-label" value=@ExecutionRequest.RunName />
+
+    @foreach (var p in Params)
+    {
+        <PipelineParam Param=p/>
+    }    
+    <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
 </div>

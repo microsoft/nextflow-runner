@@ -1,23 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
+using NextflowRunnerClient.Models;
 
 namespace NextflowRunnerClient.Components;
 
 public partial class PipelineParam
 {
     [Parameter]
-    public Services.PipelineParam Param { get; set; } = new Services.PipelineParam();
+    public ViewParam Param { get; set; } = new ();
 
-    [Parameter]
-    public string ParamValue { get; set; } = "";
-
-    public bool Valid { get; set; } = false;
-
-    public void ValidateParam()
+    protected override void OnInitialized()
     {
-        Valid = false;
-        if (ParamValue.Length > 3)
-        {
-            Valid = true;
-        }
+        Param.Value = Param.ParamExample;
     }
 }

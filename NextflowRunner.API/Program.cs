@@ -88,6 +88,8 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 
 app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest execReq, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
 {
+    var wut = sshConnectionOptions.Value.WEBLOG_URL;
+
     var pipeline = await db.Pipelines.Include(p => p.PipelineParams).FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
     if (pipeline == null) return Results.NotFound();
@@ -113,8 +115,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
         PipelineId = pipelineId,
         PipelineRunName = execReq.RunName,
         NextflowRunCommand = commandStr,
-        RunDateTime = DateTime.UtcNow,
-        Status = RunStatus.Running.ToString()
+        RunDateTime = DateTime.UtcNow
     };
 
     pipeline.PipelineRuns ??= new List<PipelineRun>();
