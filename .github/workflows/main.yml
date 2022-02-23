@@ -77,7 +77,7 @@ jobs:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./templates/main.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} vmAdminPassword=${{ secrets.VM_ADMIN_PASSWORD }} repositoryToken=${{ secrets.SWA_REPO_PAT }}' 
+        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} vmAdminPassword=${{ secrets.VM_ADMIN_PASSWORD }} repositoryToken=${{ secrets.SWA_REPO_PAT }} weblogPostUrl=${{ secrets.WEBLOG_POST_URL }}' 
 
   deploy_database:
     name: Deploy DACPAC
