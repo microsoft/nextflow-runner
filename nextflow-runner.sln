@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextflowRunnerClient", "Nex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextflowRunner.API", "NextflowRunner.API\NextflowRunner.API.csproj", "{36A00077-793D-44C2-A6FC-74B68CEB2023}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContainerInstanceDemo", "ContainerInstanceDemo\ContainerInstanceDemo.csproj", "{51937873-9734-4563-B1AF-1F4F9DB5A61A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{36A00077-793D-44C2-A6FC-74B68CEB2023}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36A00077-793D-44C2-A6FC-74B68CEB2023}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36A00077-793D-44C2-A6FC-74B68CEB2023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51937873-9734-4563-B1AF-1F4F9DB5A61A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51937873-9734-4563-B1AF-1F4F9DB5A61A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51937873-9734-4563-B1AF-1F4F9DB5A61A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51937873-9734-4563-B1AF-1F4F9DB5A61A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
