@@ -11,8 +11,9 @@ class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        string SqlConnection = Environment.GetEnvironmentVariable("DefaultConnection");
+        var sqlConnection = Environment.GetEnvironmentVariable("ConnectionStrings:DefaultConnection");
+
         builder.Services.AddDbContext<NextflowRunnerContext>(
-            options => options.UseSqlServer(SqlConnection));
+            options => options.UseSqlServer(sqlConnection));
     }
 }
