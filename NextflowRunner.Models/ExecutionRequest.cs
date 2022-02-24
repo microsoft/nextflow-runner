@@ -1,4 +1,4 @@
-﻿namespace NextflowRunner.API.Models
+﻿namespace NextflowRunner.Models
 {
     public class ExecutionRequest
     {
