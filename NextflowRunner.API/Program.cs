@@ -290,6 +290,18 @@ app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int
 .Produces(StatusCodes.Status404NotFound)
 .WithName("DeletePipelineRun");
 
+app.MapGet("/pipelineruns", async (NextflowRunnerContext db) =>
+{
+    var dbPipelineRuns = db.PipelineRuns.OrderByDescending(p=>p.PipelineRunId) ;
+
+    if (dbPipelineRuns == null) return Results.NotFound();
+
+    return Results.Ok(dbPipelineRuns); 
+})
+.Produces<List<PipelineRun>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("GetAllPipelineRun");
+
 #endregion
 
 app.Run();
