@@ -203,7 +203,7 @@ app.MapPost("/pipelines/{pipelineId}/pipelineparams", async (int pipelineId, [Fr
 
     await db.SaveChangesAsync();
 
-    return Results.CreatedAtRoute("GetPipelineParam", new { pipelineId = pipelineId, pipelineParamId = pipelineParam.PipelineParamId }, pipelineParam);
+    return Results.CreatedAtRoute("GetPipelineParam", new { pipelineId, pipelineParamId = pipelineParam.PipelineParamId }, pipelineParam);
 })
 .Produces<PipelineParam>(StatusCodes.Status201Created)
 .Produces(StatusCodes.Status404NotFound)

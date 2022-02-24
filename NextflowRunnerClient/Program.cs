@@ -17,7 +17,6 @@ public class Program
             new HttpClient()
             ));
 
-
         await builder.Build().RunAsync();
     }
 }

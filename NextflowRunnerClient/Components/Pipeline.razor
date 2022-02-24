@@ -15,9 +15,22 @@
         @if (Pline.PipelineRuns != null && Pline.PipelineRuns.Any())
         {
             <ul class="list-group list-group-flush">
+                <li>
+                    <div class="row">
+                        <div class="col">Run Name</div>
+                        <div class="col">Started On</div>
+                        <div class="col">Status</div>
+                    </div>
+                </li>
                 @foreach (var run in Pline.PipelineRuns?.OrderByDescending(r => r.RunDateTime)?.Take(3).ToList() ?? new List<PipelineRun>())
                 {
-                    <li class="list-group-item">@run.RunDateTime.ToString("g") - @run.Status</li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col">@run.PipelineRunName</div>
+                            <div class="col">@ConverToLocalDateTimeString(run.RunDateTime)</div>
+                            <div class="col">@run.Status</div>
+                        </div>
+                    </li>
                 }
             </ul>
         }

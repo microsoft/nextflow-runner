@@ -1,11 +1,7 @@
-﻿<div>
-    <EditForm class="col-form-label" Model="@Param">
-
-        <div class="form-group">
-
-            <label class="col-form-label">@Param.ParamName</label>
-            <InputText id="value" @bind-Value="@Param.Value" required />
-            <small class="form-text text-muted">@Param.ParamExample</small>
-        </div>
-    </EditForm>
-</div>
+﻿<EditForm class="col-form-label" Model="@Param">
+    <div class="form-group">
+        <label class="col-form-label">@Param.ParamName</label>
+        <InputText  class="form-control"id="value" @bind-Value="@Param.Value" required />
+        <small class="form-text text-muted">@Param.ParamExample</small>
+    </div>
+</EditForm>
