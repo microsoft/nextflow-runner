@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NextflowRunner.Models;
 using System;
 
-[assembly: FunctionsStartup(typeof(NextflowRunner.WeblogTracer.Startup))]
-namespace NextflowRunner.WeblogTracer;
+[assembly: FunctionsStartup(typeof(NextflowRunner.Serverless.Startup))]
+namespace NextflowRunner.Serverless;
 
 class Startup : FunctionsStartup
 {
