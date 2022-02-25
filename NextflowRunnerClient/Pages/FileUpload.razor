@@ -5,6 +5,9 @@
 <div>
 
     <h4>Blob Storage File Loader</h4>
+
+    <label class="col-form-label">Authorization Key</label>         
+    <InputText @bind-Value="@AzKey" required />
  
     <InputFile OnChange="e => UploadFiletoAzBlobStorage(e)" multiple />
  
