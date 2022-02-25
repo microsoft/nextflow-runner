@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace NextflowRunner.WeblogTracer;
+namespace NextflowRunner.Serverless.Functions;
 
 public class WeblogTracer
 {
@@ -23,6 +23,13 @@ public class WeblogTracer
     [FunctionName("WeblogTracer")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
     {
+
+        // 1) receive request (type execute)
+        // 2) instantiate container
+        // 3) sleep
+        // 4) weblog tracer collects traces
+        // 5) weblog tracer wakes sleeping process to kill container
+
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         dynamic data = JsonConvert.DeserializeObject(requestBody);
 
