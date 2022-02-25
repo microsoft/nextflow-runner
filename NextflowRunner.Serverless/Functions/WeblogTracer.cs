@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NextflowRunner.Models;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -21,15 +21,9 @@ public class WeblogTracer
     }
 
     [FunctionName("WeblogTracer")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+    [DurableClient] IDurableOrchestrationClient client)
     {
-
-        // 1) receive request (type execute)
-        // 2) instantiate container
-        // 3) sleep
-        // 4) weblog tracer collects traces
-        // 5) weblog tracer wakes sleeping process to kill container
-
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         dynamic data = JsonConvert.DeserializeObject(requestBody);
 
@@ -53,6 +47,11 @@ public class WeblogTracer
         pipeline.Status = eventType;
 
         await _context.SaveChangesAsync();
+
+        // todo: double check the eventType
+        if(eventType == "process_completed")
+            await client.RaiseEventAsync(runName + "-orchestration", "ContainerManager_WebhookTrigger", runName);
+        // use the run name as the orchestrationId to reduce information needed to pass
 
         return new NoContentResult();
     }

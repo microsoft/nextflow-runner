@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NextflowRunner.Models;
 using System;
@@ -13,6 +14,11 @@ class Startup : FunctionsStartup
     {
         var sqlConnection = Environment.GetEnvironmentVariable("ConnectionStrings:DefaultConnection");
 
+        builder.Services.AddOptions<ContainerConfiguration>()
+            .Configure<IConfiguration>((settings, configuration) =>
+            {
+                configuration.GetSection("ContainerConfiguration").Bind(settings);
+            });
         builder.Services.AddDbContext<NextflowRunnerContext>(
             options => options.UseSqlServer(sqlConnection));
     }

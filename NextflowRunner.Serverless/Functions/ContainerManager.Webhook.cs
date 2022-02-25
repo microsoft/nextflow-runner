@@ -20,10 +20,9 @@ HttpRequestMessage req,
 
         dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-        var orchestrationId = data?.OrchestrationId;
         var runName = data?.RunName;
 
-        await client.RaiseEventAsync(orchestrationId, "ContainerManager_WebhookTrigger", runName);
+        await client.RaiseEventAsync(runName + "-orchestration", "ContainerManager_WebhookTrigger", runName);
 
         return req.CreateResponse(HttpStatusCode.NoContent);
     }
