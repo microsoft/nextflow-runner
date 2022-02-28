@@ -14,7 +14,9 @@
         </p>
         @if (Pline.PipelineRuns != null && Pline.PipelineRuns.Any())
         {
+
            <RunListComponent RunList=@(Pline.PipelineRuns?.OrderByDescending(r => r.RunDateTime) ?.Take(3).ToList()   ) />
+
         }
     </div>
     <div class="card-footer">

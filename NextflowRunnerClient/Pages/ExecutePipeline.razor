@@ -16,11 +16,18 @@
                 <span class="input-group-text" id="run-name">@RunNameUqEnd</span>
             </div>
         </div>
+        <div>&nbsp;</div>
+        <div class="input-group">
+            <label class="col-form-label">Authorization Key: &nbsp; </label>         
+            <InputText @bind-Value="@AzureKey" required type=password />
+        </div>
     </EditForm>
+
+    
 
     @foreach (var p in Params)
     {
-        <PipelineParam Param=p />
+        <PipelineParamFile Param=p AzKey="@AzureKey" />
     }
     <br />
     <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
