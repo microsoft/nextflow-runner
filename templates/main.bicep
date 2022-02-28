@@ -76,7 +76,7 @@ module appService 'modules/appservice.bicep' = {
     nfRunnerAPIAppPlanName: nfRunnerAPIAppPlanName
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     weblogPostUrl: weblogPostUrl
-    storageAccountName: batchStorageName
+    storageAccountName: batch.outputs.batchAccountName
     storagePassphrase: storagePassphrase
   }
 }
