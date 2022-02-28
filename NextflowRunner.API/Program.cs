@@ -95,9 +95,10 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     if (pipeline == null) return Results.NotFound();
 
-    var commandStr = "/home/azureuser/tools/nextflow run";
+    var commandStr = "./nextflow run";
 
-    var filename = $" {pipeline.GitHubUrl}";
+    var filename = " nextflow-io/hello";
+    //var filename = $" {pipeline.GitHubUrl}";
 
     commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{sshConnectionOptions.Value.WEBLOG_URL}\"";
 
@@ -130,7 +131,11 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
         sshConnectionOptions.Value.VM_ADMIN_USERNAME,
         sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
 
-    client.Connect();
+    var containerRunRequest = new ContainerRunRequest
+    {
+        RunName = execReq.RunName,
+        Command = run.NextflowRunCommand
+    };
 
     using var command = client.CreateCommand(run.NextflowRunCommand);
 

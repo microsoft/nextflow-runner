@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NextflowRunner.Models;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -21,15 +20,9 @@ public class WeblogTracer
     }
 
     [FunctionName("WeblogTracer")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+    [DurableClient] IDurableOrchestrationClient client)
     {
-
-        // 1) receive request (type execute)
-        // 2) instantiate container
-        // 3) sleep
-        // 4) weblog tracer collects traces
-        // 5) weblog tracer wakes sleeping process to kill container
-
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         dynamic data = JsonConvert.DeserializeObject(requestBody);
 
@@ -40,10 +33,10 @@ public class WeblogTracer
 
         var eventType = properties.SelectToken("event").Value<string>();
 
-        if (!eventType.StartsWith("process_"))
-            return new BadRequestResult();
+        if (eventType.StartsWith("process_"))
+            return new NoContentResult();
 
-        var runName = data?.runName as string;
+        var runName = properties.SelectToken("runName").Value<string>();
 
         var pipeline = await _context.PipelineRuns.FirstOrDefaultAsync(r => string.Equals(r.PipelineRunName, runName));
 
@@ -53,6 +46,11 @@ public class WeblogTracer
         pipeline.Status = eventType;
 
         await _context.SaveChangesAsync();
+
+        // use the run name as the orchestrationId to reduce information needed to pass
+        if (eventType == "completed")
+            await client.RaiseEventAsync(runName + "-orchestration", "WeblogTraceComplete", runName);
+
 
         return new NoContentResult();
     }

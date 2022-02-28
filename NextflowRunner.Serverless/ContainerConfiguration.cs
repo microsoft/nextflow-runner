@@ -2,7 +2,11 @@
 
 public class ContainerConfiguration
 {
-    public string ResourceGroupName { get; set; } = "demo-aci";
-    public string ContainerGroupName { get; set; } = "aci-task-demo";
-    public string ContainerImage { get; set; } = "mcr.microsoft.com/azuredocs/aci-wordcount";
+    public const string ConfigSection = "ContainerConfiguration";
+    public string ClientId { get; set; } = string.Empty;
+    public string ClientSecret { get; set; } = string.Empty;
+    public string TenantId { get; set; } = string.Empty;
+    public string SubscriptionId { get; set; } = string.Empty;
+    public string ResourceGroupName { get; set; } = string.Empty;
+    public string ContainerImage { get; set; } = string.Empty;
 }
