@@ -18,6 +18,7 @@ public partial class ExecutePipeline
     protected ExecutionRequest ExecutionRequest { get; set; } = new() { RunName = string.Empty };
     protected bool SUBMITTED { get; set; } = false;
     protected bool VALID { get; set; } = false;
+    protected string AzureKey { get; set; } = "";
 
     protected async override Task OnInitializedAsync()
     {
