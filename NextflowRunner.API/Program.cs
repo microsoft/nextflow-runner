@@ -92,9 +92,10 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     if (pipeline == null) return Results.NotFound();
 
-    var commandStr = "/home/azureuser/tools/nextflow run";
+    var commandStr = "./nextflow run";
 
-    var filename = $" {pipeline.GitHubUrl}";
+    var filename = " nextflow-io/hello";
+    //var filename = $" {pipeline.GitHubUrl}";
 
     commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{options.Value.WeblogUrl}\"";
 
@@ -127,8 +128,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
     var containerRunRequest = new ContainerRunRequest
     {
         RunName = execReq.RunName,
-        Command = run.NextflowRunCommand,
-        ImageName = "" // todo: identify image name
+        Command = run.NextflowRunCommand
     };
 
     var response = await client.PostAsJsonAsync("", containerRunRequest);

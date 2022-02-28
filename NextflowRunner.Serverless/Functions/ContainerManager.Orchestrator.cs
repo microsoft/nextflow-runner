@@ -18,19 +18,14 @@ public partial class ContainerManager
         _context = context;
         _containerConfig = containerConfig;
 
-        var msiLoginInformation = new MSILoginInformation(
-                MSIResourceType.AppService,
+        _azure = Microsoft.Azure.Management.Fluent.Azure
+            .Configure()
+            .Authenticate(SdkContext.AzureCredentialsFactory.FromServicePrincipal(
                 _containerConfig.ClientId,
-                _containerConfig.ResourceId,
-                _containerConfig.ObjectId);
-
-        var credentials = SdkContext.AzureCredentialsFactory.FromMSI(
-            msiLoginInformation,
-            new AzureEnvironment(),
-            _containerConfig.TenantId);
-
-        _azure = Microsoft.Azure.Management.Fluent.Azure.Authenticate(credentials)
-            .WithDefaultSubscription();
+                _containerConfig.ClientSecret,
+                _containerConfig.TenantId,
+                AzureEnvironment.AzureGlobalCloud
+            )).WithSubscription(_containerConfig.SubscriptionId);
     }
 
     [FunctionName("ContainerManager")]
@@ -41,7 +36,7 @@ public partial class ContainerManager
 
         var containerGroupId = await context.CallActivityAsync<string>("ContainerManager_CreateContainer", containerRunRequest);
 
-        await context.WaitForExternalEvent("ContainerManager_WebhookTrigger");
+        await context.WaitForExternalEvent("WeblogTraceComplete");
 
         await context.CallActivityAsync("ContainerManager_DestroyContainer", containerGroupId);
     }

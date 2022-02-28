@@ -11,23 +11,30 @@ public partial class ContainerManager
     public string CreateContainer([ActivityTrigger] ContainerRunRequest req)
     {
         var containerGroupName = req.RunName + "-containergroup";
-        var containerGroup = _azure.ContainerGroups.Define(containerGroupName)
+
+        var containerWithCreate = _azure.ContainerGroups.Define(containerGroupName)
             .WithRegion(_azure.ResourceGroups.GetByName(_containerConfig.ResourceGroupName).Region)
             .WithExistingResourceGroup(_containerConfig.ResourceGroupName)
             .WithLinux()
             .WithPublicImageRegistryOnly()
             .WithoutVolume()
             .DefineContainerInstance(req.RunName + "-container")
-                .WithImage(req.ImageName) // todo: one image or many images? - do we derive from user input or config?
-                // todo: configure container better for nextflow
+                .WithImage(req.ContainerImage)
                 .WithExternalTcpPort(80)
                 .WithCpuCoreCount(1.0)
                 .WithMemorySizeInGB(1)
-                .WithStartingCommandLine(req.Command)
-                .Attach()
+                .WithEnvironmentVariables(req.Parameters);
+
+        if (!string.IsNullOrWhiteSpace(req.Command))
+            containerWithCreate
+                .WithStartingCommandLine(req.Command);
+
+        var containerGroupWithCreate = containerWithCreate
+            .Attach()
             .WithDnsPrefix(containerGroupName)
-            .WithRestartPolicy(ContainerGroupRestartPolicy.Never)
-            .Create();
+            .WithRestartPolicy(ContainerGroupRestartPolicy.Never);
+
+        var containerGroup = containerGroupWithCreate.Create();
 
         return containerGroup.Id;
     }

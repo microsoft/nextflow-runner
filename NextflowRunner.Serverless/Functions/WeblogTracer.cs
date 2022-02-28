@@ -34,10 +34,10 @@ public class WeblogTracer
 
         var eventType = properties.SelectToken("event").Value<string>();
 
-        if (!eventType.StartsWith("process_"))
-            return new BadRequestResult();
+        if (eventType.StartsWith("process_"))
+            return new NoContentResult();
 
-        var runName = data?.runName as string;
+        var runName = properties.SelectToken("runName").Value<string>();
 
         var pipeline = await _context.PipelineRuns.FirstOrDefaultAsync(r => string.Equals(r.PipelineRunName, runName));
 
@@ -48,10 +48,9 @@ public class WeblogTracer
 
         await _context.SaveChangesAsync();
 
-        // todo: double check the eventType
-        if(eventType == "process_completed")
-            await client.RaiseEventAsync(runName + "-orchestration", "ContainerManager_WebhookTrigger", runName);
         // use the run name as the orchestrationId to reduce information needed to pass
+        if (eventType == "completed")
+            await client.RaiseEventAsync(runName + "-orchestration", "WeblogTraceComplete", runName);
 
         return new NoContentResult();
     }
