@@ -6,7 +6,7 @@ param storageAccountName string
 @secure()
 param storagePassphrase string
 
-param expireTime string = dateTimeAdd(utcNow('u'), 'P1Y')
+//param expireTime string = dateTimeAdd(utcNow('u'), 'P1Y')
 
 @allowed([
   'nonprod'
@@ -21,16 +21,16 @@ param sqlConnection string
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
 
-var sasTokenProps = {
-  canonicalizedResource: '/blob/${storageAccountName}/nextflow'
-  signedResource: 'c'
-  signedProtocol: 'https'
-  signedPermission: 'w'
-  signedServices: 'b'
-  signedExpiry: expireTime
-}
-var storageSASToken = listServiceSAS(storageAccountName, '2021-06-01', sasTokenProps).serviceSasToken
-
+// var sasTokenProps = {
+//   canonicalizedResource: '/blob/${storageAccountName}/nextflow'
+//   signedResource: 'c'
+//   signedProtocol: 'https'
+//   signedPermission: 'w'
+//   signedServices: 'b'
+//   signedExpiry: expireTime
+// }
+// var storageSASToken = listServiceSAS(storageAccountName, '2021-06-01', sasTokenProps).serviceSasToken
+var storageSASToken = ''
 
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
