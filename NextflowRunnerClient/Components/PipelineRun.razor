@@ -1,0 +1,26 @@
+﻿
+    <li class="list-group-item">
+         <div class="col">@Run.Status</div>               <div class="row">
+        @switch (@Run.Status)
+        {
+            case "Completed":
+            <div class="col">Compl</div>    
+            break;
+            case "Running":
+                <div class="col">Unknown</div>
+                break;
+            case "":
+                <div class="col">Unknown</div>
+                break;
+            default:
+                
+                break;
+
+        }
+        
+                            <div class="col">@Run.PipelineRunName</div>
+                            <div class="col">@ConverToLocalDateTimeString(Run.RunDateTime)</div>
+                            
+                        </div>
+                    </li>                 
+
