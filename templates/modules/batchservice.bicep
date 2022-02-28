@@ -50,37 +50,37 @@ resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/contai
   name: '${storageAccountName}/default/${storageContainerName}'
 }
 
-resource storagePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2021-08-01' = {
-  name: '${batchStorage.name}/AutoDelete48hours'
-  properties: {
-    policy: {
-      rules: [
-        {
-          enabled: true
-          name: 'AutoDelete48hours'
-          type: 'Lifecycle'
-          definition: {
-            actions: {
-              baseBlob: {
-                delete: {
-                  daysAfterModificationGreaterThan: 2
-                }
-              }
-            }
-            filters: {
-              blobTypes: [
-                'blockBlob'
-              ]
-              prefixMatch: [
-                storageContainer.name
-              ]
-            }
-          }
-        }
-      ]
-    }
-  }
-}
+// resource storagePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2021-08-01' = {
+//   name: '${batchStorage.name}/AutoDelete48hours'
+//   properties: {
+//     policy: {
+//       rules: [
+//         {
+//           enabled: true
+//           name: 'AutoDelete48hours'
+//           type: 'Lifecycle'
+//           definition: {
+//             actions: {
+//               baseBlob: {
+//                 delete: {
+//                   daysAfterModificationGreaterThan: 2
+//                 }
+//               }
+//             }
+//             filters: {
+//               blobTypes: [
+//                 'blockBlob'
+//               ]
+//               prefixMatch: [
+//                 storageContainer.name
+//               ]
+//             }
+//           }
+//         }
+//       ]
+//     }
+//   }
+// }
 
 resource batchService 'Microsoft.Batch/batchAccounts@2021-06-01' = {
   name: batchAccountName

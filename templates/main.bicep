@@ -8,7 +8,7 @@ param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
 param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
 param batchAccountName string = '${prefix}batch'
 param batchStorageName string = '${prefix}batchsa'
-param acrName string = '${prefix}-acr'
+param acrName string = '${prefix}acr'
 
 @description('An existing keyvault with secrets for container instance and API apps')
 param keyVaultName string = 'nfrunnerkv'
