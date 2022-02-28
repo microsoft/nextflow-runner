@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<SSHConnectionOptions>(builder.Configuration.GetSection(SSHConnectionOptions.ConfigSection));
+builder.Services.Configure<AzureContainerOptions>(builder.Configuration.GetSection(AzureContainerOptions.ConfigSection));
 
 builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -303,5 +304,22 @@ app.MapGet("/pipelineruns", async (NextflowRunnerContext db) =>
 .WithName("GetAllPipelineRun");
 
 #endregion
+
+#region AzureStorage
+
+app.MapGet("/azsas/{authKey}", (string authKey, IOptions<AzureContainerOptions> azureContainerOptions) =>
+{
+    if (authKey == azureContainerOptions.Value.AZURE_STORAGE_KEY) return Results.Ok(azureContainerOptions.Value);
+
+    return Results.NotFound();
+})
+.Produces<AzureContainerOptions>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("GetAzureContainerOptions");
+
+
+#endregion
+
+
 
 app.Run();
