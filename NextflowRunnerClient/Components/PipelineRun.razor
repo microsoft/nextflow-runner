@@ -1,26 +1,21 @@
-﻿
-    <li class="list-group-item">
-         <div class="col">@Run.Status</div>               <div class="row">
-        @switch (@Run.Status)
-        {
-            case "Completed":
-            <div class="col">Compl</div>    
-            break;
-            case "Running":
-                <div class="col">Unknown</div>
-                break;
-            case "":
-                <div class="col">Unknown</div>
-                break;
-            default:
-                
-                break;
-
-        }
-        
-                            <div class="col">@Run.PipelineRunName</div>
-                            <div class="col">@ConverToLocalDateTimeString(Run.RunDateTime)</div>
-                            
-                        </div>
-                    </li>                 
-
+﻿<li class="list-group-item">
+    <div class="row">
+        <div class="col">@Run.PipelineRunName</div>
+        <div class="col">@ConverToLocalDateTimeString(Run.RunDateTime)</div>
+        <div class="col">
+            @switch (@Run.Status)
+            {
+                case "Completed":
+                    <span class="oi oi-circle-check">Completed</span>
+                    break;
+                case "Running":
+                    <span class="oi oi-reload"></span>
+                    break;
+                case "":
+                default:
+                    <span class="oi oi-question-mark"></span>
+                    break;
+            }
+        </div>
+    </div>
+</li>
