@@ -1,0 +1,37 @@
+﻿@page "/files"
+
+<h3>FileUpload</h3>
+
+<div>
+
+    <h4>Blob Storage File Loader</h4>
+
+    <label class="col-form-label">Authorization Key</label>         
+    <InputText @bind-Value="@AzKey" required />
+ 
+    <InputFile OnChange="e => UploadFiletoAzBlobStorage(e)" multiple />
+ 
+    <p>@status</p>
+
+    @((MarkupString)uploadedFile)
+
+
+    @if (fileSelected)
+    {
+        <p>
+            <div class="spinner-border" /><h5>Uploading file...</h5>
+        </p>
+    }
+
+    @foreach (var file in uploadedFiles)  // coded so that we can allow multiple file upload in single control in the future
+    {
+        <div>
+            @file.FileName 
+            &nbsp;&nbsp;<progress value="@file.UploadedBytes" max="@file.Size"></progress>&nbsp;
+            @file.UploadedPercentage.ToString("F1")%
+            (@FormatBytes(file.UploadedBytes) / @FormatBytes(file.Size))
+        </div>
+    }
+
+
+</div>
