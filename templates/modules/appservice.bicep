@@ -1,10 +1,10 @@
 param location string = resourceGroup().location
 param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
-param vmAdminUserName string
-param vmHostName string
 param weblogPostUrl string
-
+param storageAccountName string
+@secure()
+param storageAccountKey string
 
 @allowed([
   'nonprod'
@@ -15,9 +15,6 @@ param environmentType string
 // App Settings
 @secure()
 param sqlConnection string
-
-@secure()
-param vmAdminPassword string
 
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
@@ -52,21 +49,18 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
       ]
       appSettings: [
         {
-          name: 'SSHConnection__VM_ADMIN_USERNAME'
-          value: vmAdminUserName
-        }
-        {
-          name: 'SSHConnection__VM_ADMIN_PASSWORD'
-          value: vmAdminPassword
-        }
-        {
-          name: 'SSHConnection__VM_HOSTNAME'
-          value: vmHostName
-        }
-        {
           name: 'SSHConnection__WEBLOG_URL'
           value: weblogPostUrl
         }
+        {
+          name: 'AzureStorage__AZURE_STORAGE_ACCOUNTNAME'
+          value: storageAccountName
+        }
+        {
+          name: 'AzureStorage__AZURE_STORAGE_ACCESS_KEY'
+          value: storageAccountKey
+        }        
+
       ]
     }
   }
