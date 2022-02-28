@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NextflowRunner.API.Models;
+namespace NextflowRunner.Models;
 
 [Table("Pipeline")]
 public record Pipeline
