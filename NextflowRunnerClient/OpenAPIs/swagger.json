@@ -500,10 +500,87 @@
           }
         }
       }
+    },
+    "/pipelineruns": {
+      "get": {
+        "tags": [
+          "NextflowRunner.API"
+        ],
+        "operationId": "GetAllPipelineRun",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PipelineRun"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/azsas/{authKey}": {
+      "get": {
+        "tags": [
+          "NextflowRunner.API"
+        ],
+        "operationId": "GetAzureContainerOptions",
+        "parameters": [
+          {
+            "name": "authKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AzureContainerOptions"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AzureContainerOptions": {
+        "type": "object",
+        "properties": {
+          "azurE_STORAGE_SAS": {
+            "type": "string",
+            "nullable": true
+          },
+          "azurE_STORAGE_ACCOUNTNAME": {
+            "type": "string",
+            "nullable": true
+          },
+          "azurE_STORAGE_KEY": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ExecutionRequest": {
         "type": "object",
         "properties": {

@@ -1,0 +1,15 @@
+﻿<div>
+     <ul class="list-group list-group-flush">
+                <li>
+                    <div class="row">
+                        <div class="col">Run Name</div>
+                        <div class="col">Started On</div>
+                        <div class="col">Status</div>
+                    </div>
+                </li>
+    @foreach (var p in @RunList)
+    {
+        <PipelineRun Run=p />
+    }
+    </ul>
+</div>
