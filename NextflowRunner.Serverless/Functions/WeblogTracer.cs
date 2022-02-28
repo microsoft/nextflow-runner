@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -50,7 +51,6 @@ public class WeblogTracer
         // use the run name as the orchestrationId to reduce information needed to pass
         if (eventType == "completed")
             await client.RaiseEventAsync(runName + "-orchestration", "WeblogTraceComplete", runName);
-
 
         return new NoContentResult();
     }

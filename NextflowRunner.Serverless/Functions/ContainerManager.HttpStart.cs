@@ -17,9 +17,10 @@ public partial class ContainerManager
     {
         var json = await req.Content.ReadAsStringAsync();
 
-        var execRequest = JsonConvert.DeserializeObject<ExecutionRequest>(json);
+        var containerRunRequest = JsonConvert.DeserializeObject<ContainerRunRequest>(json);
 
-        var instanceId = await starter.StartNewAsync("ContainerManager", execRequest);
+        // use the run name as the orchestrationId to reduce information needed to pass
+        var instanceId = await starter.StartNewAsync("ContainerManager", containerRunRequest.RunName + "-orchestration", containerRunRequest);
 
         return starter.CreateCheckStatusResponse(req, instanceId);
     }

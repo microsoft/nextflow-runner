@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NextflowRunner.API;
+using NextflowRunner.Models;
 using NextflowRunner.API.Models;
 using NextflowRunner.Models;
 using Renci.SshNet;
@@ -10,10 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<SSHConnectionOptions>(builder.Configuration.GetSection(SSHConnectionOptions.ConfigSection));
+builder.Services.Configure<OrchestrationOptions>(builder.Configuration.GetSection(OrchestrationOptions.ConfigSection));
 builder.Services.Configure<AzureContainerOptions>(builder.Configuration.GetSection(AzureContainerOptions.ConfigSection));
 
 builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpClient();
 
 builder.Services.AddCors(o =>
     o.AddDefaultPolicy(b =>
@@ -87,10 +90,8 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
 .Produces(StatusCodes.Status404NotFound)
 .WithName("UpdatePipeline");
 
-app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest execReq, NextflowRunnerContext db, IOptions<SSHConnectionOptions> sshConnectionOptions) =>
+app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest execReq, NextflowRunnerContext db, IHttpClientFactory clientFactory, IOptions<OrchestrationOptions> options) =>
 {
-    var wut = sshConnectionOptions.Value.WEBLOG_URL;
-
     var pipeline = await db.Pipelines.Include(p => p.PipelineParams).FirstOrDefaultAsync(p => p.PipelineId == pipelineId);
 
     if (pipeline == null) return Results.NotFound();
@@ -100,7 +101,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
     var filename = " nextflow-io/hello";
     //var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{sshConnectionOptions.Value.WEBLOG_URL}\"";
+    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{options.Value.WeblogUrl}\"";
 
     if (pipeline.PipelineParams != null)
         foreach (var param in pipeline.PipelineParams)
@@ -126,10 +127,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     await db.SaveChangesAsync();
 
-    using var client = new SshClient(
-        sshConnectionOptions.Value.VM_ADMIN_HOSTNAME,
-        sshConnectionOptions.Value.VM_ADMIN_USERNAME,
-        sshConnectionOptions.Value.VM_ADMIN_PASSWORD);
+    var client = clientFactory.CreateClient(options.Value.HttpStartUrl);
 
     var containerRunRequest = new ContainerRunRequest
     {
@@ -137,11 +135,9 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
         Command = run.NextflowRunCommand
     };
 
-    using var command = client.CreateCommand(run.NextflowRunCommand);
+    var response = await client.PostAsJsonAsync("", containerRunRequest);
 
-    var output = command.Execute();
-
-    client.Disconnect();
+    // todo: parse check status and provide status updates about the orechstration there?
 
     return Results.CreatedAtRoute("GetPipelineRun", new { pipelineId = pipeline.PipelineId, pipelineRunId = run.PipelineRunId }, run);
 })

@@ -2,7 +2,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
-using System.Collections.Generic;
 
 namespace NextflowRunner.Serverless.Functions;
 
@@ -21,9 +20,9 @@ public partial class ContainerManager
             .WithoutVolume()
             .DefineContainerInstance(req.RunName + "-container")
                 .WithImage(req.ContainerImage)
-                // todo: configure container better for nextflow
                 .WithExternalTcpPort(80)
                 .WithCpuCoreCount(1.0)
+                .WithMemorySizeInGB(1)
                 .WithEnvironmentVariables(req.Parameters);
 
         if (!string.IsNullOrWhiteSpace(req.Command))
@@ -36,7 +35,6 @@ public partial class ContainerManager
             .WithRestartPolicy(ContainerGroupRestartPolicy.Never);
 
         var containerGroup = containerGroupWithCreate.Create();
-            .Create();
 
         return containerGroup.Id;
     }
