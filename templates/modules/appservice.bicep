@@ -4,7 +4,9 @@ param nfRunnerAPIAppName string
 param weblogPostUrl string
 param storageAccountName string
 @secure()
-param storageAccountKey string
+param storagePassphrase string
+
+param expireTime string = dateTimeAdd(utcNow('u'), 'P1Y')
 
 @allowed([
   'nonprod'
@@ -18,6 +20,17 @@ param sqlConnection string
 
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
+
+
+var sasTokenProps = {
+  canonicalizedResource: '/blob/${storageAccountName}/nextflow'
+  signedResource: 'c'
+  signedProtocol: 'https'
+  signedPermission: 'w'
+  signedServices: 'b'
+  signedExpiry: expireTime
+}
+var storageSASToken = listServiceSAS(storageAccountName, '2021-06-01', sasTokenProps).serviceSasToken
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: nfRunnerAPIAppPlanName
@@ -57,10 +70,13 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           value: storageAccountName
         }
         {
-          name: 'AzureStorage__AZURE_STORAGE_ACCESS_KEY'
-          value: storageAccountKey
+          name: 'AzureStorage__AZURE_STORAGE_KEY'
+          value: storagePassphrase
+        }
+        {
+          name: 'AzureStorage__AZURE_STORAGE_SAS'
+          value: storageSASToken
         }        
-
       ]
     }
   }

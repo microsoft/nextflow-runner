@@ -14,6 +14,9 @@ param acrName string = '${prefix}-acr'
 param keyVaultName string = 'nfrunnerkv'
 
 @secure()
+param storagePassphrase string
+
+@secure()
 param weblogPostUrl string
 
 @secure()
@@ -47,7 +50,7 @@ module batch 'modules/batchservice.bicep' = {
     keyvaultName: keyVaultName
     location: location
     batchAccountName: batchAccountName
-    storageAccountName: batchStorageName
+    storageAccountName: batchStorageName    
   }
 }
 
@@ -74,7 +77,7 @@ module appService 'modules/appservice.bicep' = {
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     weblogPostUrl: weblogPostUrl
     storageAccountName: batchStorageName
-    storageAccountKey: keyvault.getSecret('storage-key')
+    storagePassphrase: storagePassphrase
   }
 }
 

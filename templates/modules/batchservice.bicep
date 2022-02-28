@@ -16,6 +16,36 @@ resource batchStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   }
 }
 
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2021-08-01' = {
+  name: '${batchStorage.name}/default'
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'GET'
+            'HEAD'
+            'MERGE'
+            'OPTIONS'
+            'POST'
+            'PUT'
+          ]
+          allowedOrigins: [
+            '*'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+          maxAgeInSeconds: 3600
+        }
+      ]
+    }
+  }
+}
+
 resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
   name: '${storageAccountName}/default/${storageContainerName}'
 }
