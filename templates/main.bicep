@@ -5,19 +5,22 @@ param sqlServerName string = '${prefix}-${sqlDatabaseName}-server'
 param sqlAdminUserName string = 'nf-runner-admin'
 param nfRunnerAPIAppPlanName string = '${prefix}-nfrunner-plan'
 param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
+param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
 param batchAccountName string = '${prefix}batch'
 param batchStorageName string = '${prefix}batchsa'
-param vmAdminUserName string = 'azureuser'
-param vmHostName string = '40.83.22.113'
+param acrName string = '${prefix}-acr'
+
+@description('An existing keyvault with secrets for container instance and API apps')
+param keyVaultName string = 'nfrunnerkv'
+
+@secure()
+param storagePassphrase string
 
 @secure()
 param weblogPostUrl string
 
 @secure()
 param sqlAdminPassword string
-
-@secure()
-param vmAdminPassword string
 
 @secure()
 @description('Github token for static web app deployment')
@@ -44,10 +47,24 @@ module sqlDatabase 'modules/sql-database.bicep' = {
 module batch 'modules/batchservice.bicep' = {
   name: 'batch-account'
   params: {
+    keyvaultName: keyVaultName
     location: location
     batchAccountName: batchAccountName
-    storageAccountName: batchStorageName
+    storageAccountName: batchStorageName    
   }
+}
+
+module acr 'modules/container-registry.bicep' = {
+  name: 'nf-runner-acr'
+  params: {
+    kvName: keyVaultName
+    location: location
+    acrName: acrName    
+  }
+}
+
+resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
+  name: keyVaultName
 }
 
 module appService 'modules/appservice.bicep' = {
@@ -58,18 +75,20 @@ module appService 'modules/appservice.bicep' = {
     nfRunnerAPIAppName: nfRunnerAPIAppName
     nfRunnerAPIAppPlanName: nfRunnerAPIAppPlanName
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    vmAdminUserName: vmAdminUserName
-    vmAdminPassword: vmAdminPassword
-    vmHostName: vmHostName
     weblogPostUrl: weblogPostUrl
+    storageAccountName: batchStorageName
+    storagePassphrase: storagePassphrase
   }
 }
 
 module clientApp 'modules/staticsite.bicep' = {
   name: 'nextflow-runner-client'
   params: {
+    swaSiteName: nfRunnerClientAppName
     location: location
     repositoryToken: repositoryToken
+    repositoryBranch: 'main'
+    repositoryUrl: 'https://github.com/microsoft/nextflow-runner'
   }
 }
 
@@ -79,3 +98,4 @@ output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
 output sqlUserName string = sqlDatabase.outputs.sqlUserName
 output batchAccountName string = batch.outputs.batchAccountName
+output acrLoginServer string = acr.outputs.acrLoginServer

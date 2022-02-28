@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param swaSiteName string = 'nextflowrunnerClient-${uniqueString(resourceGroup().id)}'
+param swaSiteName string
 param repositoryUrl string = 'https://github.com/microsoft/nextflow-runner'
 param repositoryBranch string = 'main'
 @secure()

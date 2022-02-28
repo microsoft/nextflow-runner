@@ -1,14 +1,12 @@
 ﻿
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Rest.Azure;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.Management.ContainerInstance.Fluent.Models;
 
 string resourceGroupName = "demo-aci";
 string containerGroupName = "aci-task-demo";
-string containerImage = "mcr.microsoft.com/azuredocs/aci-wordcount";
+string containerImage = "havocdemoacr.azurecr.io/havoc-trigger:v1";
 
 //var credentials = SdkContext.AzureCredentialsFactory.FromDevice("94c9fc18-8343-4994-b49d-7f4caf0a1ebe", "72f988bf-86f1-41af-91ab-2d7cd011db47", AzureEnvironment.AzureGlobalCloud);
 
@@ -16,8 +14,11 @@ IAzure azure = Azure.Authenticate("my.azureauth").WithDefaultSubscription();
 
 Dictionary<string, string> envVars = new Dictionary<string, string>
             {
-                { "NumWords", "5" },
-                { "MinLength", "8" }
+                {"STORAGE_NAME", "hli6aqxtwj2yybatchsa"},
+                {"STORAGE_KEY", ""},
+                {"BATCH_REGION", "centralus"},
+                {"BATCH_ACCOUNT", "hli6aqxtwj2yybatch"},
+                {"BATCH_KEY", ""}
             };
 
 Console.WriteLine($"\nCreating container group '{containerGroupName}'");
@@ -31,7 +32,7 @@ var containerGroup = azure.ContainerGroups.Define(containerGroupName)
     .WithRegion(azureRegion)
     .WithExistingResourceGroup(resourceGroupName)
     .WithLinux()
-    .WithPublicImageRegistryOnly()
+    .WithPrivateImageRegistry("havocdemoacr.azurecr.io","havocdemoacr","")
     .WithoutVolume()
     .DefineContainerInstance(containerGroupName + "-1")
         .WithImage(containerImage)
