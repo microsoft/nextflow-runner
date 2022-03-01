@@ -8,5 +8,10 @@ public class ContainerConfiguration
     public string TenantId { get; set; } = string.Empty;
     public string SubscriptionId { get; set; } = string.Empty;
     public string ResourceGroupName { get; set; } = string.Empty;
-    public string ContainerImage { get; set; } = string.Empty;
+
+    public string StorageName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public string BatchRegion { get; set; } = string.Empty;
+    public string BatchAccountName { get; set; } = string.Empty;
+    public string BatchKey { get; set; } = string.Empty;
 }

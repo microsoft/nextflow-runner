@@ -5,6 +5,8 @@ param sqlServerName string = '${prefix}-${sqlDatabaseName}-server'
 param sqlAdminUserName string = 'nf-runner-admin'
 param nfRunnerAPIAppPlanName string = '${prefix}-nfrunner-plan'
 param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
+param nfRunnerFunctionAppName string = '${prefix}-nf-runner-serverless'
+param nfRunnerFunctionAppStorageName string = '${prefix}-nf-runner-serverless-sa'
 param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
 param batchAccountName string = '${prefix}batch'
 param batchStorageName string = '${prefix}batchsa'
@@ -31,6 +33,10 @@ param repositoryToken string
   'prod'
 ])
 param environmentType string
+
+resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
+  name: keyVaultName
+}
 
 module sqlDatabase 'modules/sql-database.bicep' = {
   name: 'hackAPI-database'
@@ -63,8 +69,22 @@ module acr 'modules/container-registry.bicep' = {
   }
 }
 
-resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
-  name: keyVaultName
+var sqlConn = 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+
+module functionApp 'modules/function-app.bicep' = {
+  name: 'nextflow-runner-serverless'
+  params: {
+    location: location
+    functionAppName: nfRunnerFunctionAppName
+    functionStorageAccountName: nfRunnerFunctionAppStorageName
+    batchStorageAccountName: batch.outputs.storageAccountName
+    batchStorageAccountKey: keyvault.getSecret('storage-key')
+    batchAccountName: batch.outputs.batchAccountName
+    batchAccountKey: keyvault.getSecret('batch-key')
+    servicePrincipalClientId: keyvault.getSecret('SP-AzureFunction-ClientId')
+    servicePrincipalClientSecret: keyvault.getSecret('SP-AzureFunction-ClientSecret')
+    sqlConnection: sqlConn
+  }
 }
 
 module appService 'modules/appservice.bicep' = {
@@ -77,11 +97,12 @@ module appService 'modules/appservice.bicep' = {
     location: location
     nfRunnerAPIAppName: nfRunnerAPIAppName
     nfRunnerAPIAppPlanName: nfRunnerAPIAppPlanName
-    sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+    sqlConnection: sqlConn
     weblogPostUrl: weblogPostUrl
     storageAccountName: batch.outputs.batchAccountName
     storagePassphrase: storagePassphrase
     storageSASToken: keyvault.getSecret('storage-sas-token')
+    functionAppUrl: functionApp.outputs.functionAppUrl
   }
 }
 
@@ -97,6 +118,7 @@ module clientApp 'modules/staticsite.bicep' = {
 }
 
 output appServiceAppName string = appService.outputs.appServiceAppName
+output functionAppName string = functionApp.outputs.functionAppName
 output sqlServerFQDN string = sqlDatabase.outputs.sqlServerFQDN
 output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName

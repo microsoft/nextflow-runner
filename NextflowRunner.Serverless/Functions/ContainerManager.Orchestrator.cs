@@ -1,8 +1,8 @@
 using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NextflowRunner.Serverless.Functions;
@@ -11,11 +11,10 @@ public partial class ContainerManager
 {
     private readonly ContainerConfiguration _containerConfig;
     private readonly Microsoft.Azure.Management.Fluent.IAzure _azure;
-    private readonly NextflowRunnerContext _context;
+    private readonly Dictionary<string, string> _containerEnvVariables;
 
-    public ContainerManager(ContainerConfiguration containerConfig, NextflowRunnerContext context)
+    public ContainerManager(ContainerConfiguration containerConfig)
     {
-        _context = context;
         _containerConfig = containerConfig;
 
         _azure = Microsoft.Azure.Management.Fluent.Azure
@@ -26,6 +25,14 @@ public partial class ContainerManager
                 _containerConfig.TenantId,
                 AzureEnvironment.AzureGlobalCloud
             )).WithSubscription(_containerConfig.SubscriptionId);
+
+        _containerEnvVariables = new Dictionary<string, string>{
+          [nameof(containerConfig.StorageName)] = containerConfig.StorageName,
+          [nameof(containerConfig.StorageKey)] = containerConfig.StorageKey,
+          [nameof(containerConfig.BatchRegion)] = containerConfig.BatchRegion,
+          [nameof(containerConfig.BatchAccountName)] = containerConfig.BatchAccountName,
+          [nameof(containerConfig.BatchKey)] = containerConfig.BatchKey,
+        };
     }
 
     [FunctionName("ContainerManager")]

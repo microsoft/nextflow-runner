@@ -2,6 +2,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
+using System.Linq;
 
 namespace NextflowRunner.Serverless.Functions;
 
@@ -11,6 +12,12 @@ public partial class ContainerManager
     public string CreateContainer([ActivityTrigger] ContainerRunRequest req)
     {
         var containerGroupName = req.RunName + "-containergroup";
+
+        var keyValuePairs = req.Parameters.Select(kvp => kvp).ToList();
+
+        keyValuePairs.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
+
+        var environmentVariables = keyValuePairs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         var containerWithCreate = _azure.ContainerGroups.Define(containerGroupName)
             .WithRegion(_azure.ResourceGroups.GetByName(_containerConfig.ResourceGroupName).Region)
@@ -23,7 +30,7 @@ public partial class ContainerManager
                 .WithExternalTcpPort(80)
                 .WithCpuCoreCount(1.0)
                 .WithMemorySizeInGB(1)
-                .WithEnvironmentVariables(req.Parameters);
+                .WithEnvironmentVariables(environmentVariables);
 
         if (!string.IsNullOrWhiteSpace(req.Command))
             containerWithCreate

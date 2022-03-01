@@ -29,7 +29,11 @@ public class Startup : FunctionsStartup
             TenantId = Environment.GetEnvironmentVariable("ContainerConfiguration:TenantId"),
             SubscriptionId = Environment.GetEnvironmentVariable("ContainerConfiguration:SubscriptionId"),
             ResourceGroupName = Environment.GetEnvironmentVariable("ContainerConfiguration:ResourceGroupName"),
-            ContainerImage = Environment.GetEnvironmentVariable("ContainerConfiguration:ContainerImage"),
+            StorageName = Environment.GetEnvironmentVariable("ContainerConfiguration:StorageName"),
+            StorageKey = Environment.GetEnvironmentVariable("ContainerConfiguration:StorageKey"),
+            BatchRegion = Environment.GetEnvironmentVariable("ContainerConfiguration:BatchRegion"),
+            BatchAccountName = Environment.GetEnvironmentVariable("ContainerConfiguration:BatchAccountName"),
+            BatchKey = Environment.GetEnvironmentVariable("ContainerConfiguration:BatchKey")
         };
 
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings:DefaultConnection");
