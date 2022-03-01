@@ -69,6 +69,9 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
 
 module appService 'modules/appservice.bicep' = {
   name: 'nextflow-runner-appservice'
+  dependsOn: [
+    batch
+  ]
   params: {
     environmentType: environmentType
     location: location
@@ -78,6 +81,7 @@ module appService 'modules/appservice.bicep' = {
     weblogPostUrl: weblogPostUrl
     storageAccountName: batch.outputs.batchAccountName
     storagePassphrase: storagePassphrase
+    storageSASToken: keyvault.getSecret('storage-sas-token')
   }
 }
 

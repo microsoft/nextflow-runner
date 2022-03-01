@@ -3,6 +3,7 @@ param storageAccountName string
 param keyvaultName string
 param location string
 param storageContainerName string = 'nextflow'
+param expireTime string = dateTimeAdd(utcNow('u'), 'P1Y')
 
 resource batchStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   name: storageAccountName
@@ -47,7 +48,7 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2021-08-01'
 }
 
 resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
-  name: '${storageAccountName}/default/${storageContainerName}'
+  name: '${batchStorage.name}/default/${storageContainerName}'
 }
 
 // resource storagePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2021-08-01' = {
@@ -82,6 +83,16 @@ resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/contai
 //   }
 // }
 
+var sasTokenProps = {
+  canonicalizedResource: '/blob/${batchStorage.name}/${storageContainerName}'
+  signedResource: 'c'
+  signedProtocol: 'https'
+  signedPermission: 'w'
+  signedServices: 'b'
+  signedExpiry: expireTime
+}
+var storageSASToken = listServiceSAS(batchStorage.name, '2021-06-01', sasTokenProps).serviceSasToken
+
 resource batchService 'Microsoft.Batch/batchAccounts@2021-06-01' = {
   name: batchAccountName
   location: location
@@ -95,17 +106,24 @@ resource batchService 'Microsoft.Batch/batchAccounts@2021-06-01' = {
   }
 }
 
-resource batchKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+resource batchKeySecret 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   name: '${keyvaultName}/batch-key'
   properties: {
     value: batchService.listKeys().primary
   }
 }
 
-resource storageKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+resource storageKeySecret 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   name: '${keyvaultName}/storage-key'
   properties: {
     value: batchStorage.listKeys().keys[0].value
+  }
+}
+
+resource storageSASSecret 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+  name: '${keyvaultName}/storage-sas-token'
+  properties: {
+    value: storageSASToken
   }
 }
 
