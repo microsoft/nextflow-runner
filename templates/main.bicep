@@ -118,6 +118,7 @@ module clientApp 'modules/staticsite.bicep' = {
 }
 
 output appServiceAppName string = appService.outputs.appServiceAppName
+output functionAppName string = functionApp.outputs.functionAppName
 output sqlServerFQDN string = sqlDatabase.outputs.sqlServerFQDN
 output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
