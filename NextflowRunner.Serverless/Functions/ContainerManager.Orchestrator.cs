@@ -4,6 +4,7 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TimeSpan = System.TimeSpan;
 
 namespace NextflowRunner.Serverless.Functions;
 
@@ -26,12 +27,13 @@ public partial class ContainerManager
                 AzureEnvironment.AzureGlobalCloud
             )).WithSubscription(_containerConfig.SubscriptionId);
 
-        _containerEnvVariables = new Dictionary<string, string>{
-          [nameof(containerConfig.StorageName)] = containerConfig.StorageName,
-          [nameof(containerConfig.StorageKey)] = containerConfig.StorageKey,
-          [nameof(containerConfig.BatchRegion)] = containerConfig.BatchRegion,
-          [nameof(containerConfig.BatchAccountName)] = containerConfig.BatchAccountName,
-          [nameof(containerConfig.BatchKey)] = containerConfig.BatchKey,
+        _containerEnvVariables = new Dictionary<string, string>
+        {
+            [nameof(containerConfig.StorageName)] = containerConfig.StorageName,
+            [nameof(containerConfig.StorageKey)] = containerConfig.StorageKey,
+            [nameof(containerConfig.BatchRegion)] = containerConfig.BatchRegion,
+            [nameof(containerConfig.BatchAccountName)] = containerConfig.BatchAccountName,
+            [nameof(containerConfig.BatchKey)] = containerConfig.BatchKey,
         };
     }
 
@@ -41,9 +43,12 @@ public partial class ContainerManager
     {
         var containerRunRequest = context.GetInput<ContainerRunRequest>();
 
-        var containerGroupId = await context.CallActivityAsync<string>("ContainerManager_CreateContainer", containerRunRequest);
+        var containerGroupId = string.Empty;
 
-        await context.WaitForExternalEvent("WeblogTraceComplete");
+        if (!context.IsReplaying)
+            containerGroupId = await context.CallActivityAsync<string>("ContainerManager_CreateContainer", containerRunRequest);
+
+        await context.WaitForExternalEvent("WeblogTraceComplete", TimeSpan.FromHours(48));
 
         await context.CallActivityAsync("ContainerManager_DestroyContainer", containerGroupId);
     }

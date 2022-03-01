@@ -96,12 +96,14 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     if (pipeline == null) return Results.NotFound();
 
-    var commandStr = "./nextflow run";
+    var commandStr = "nextflow run";
 
     var filename = " nextflow-io/hello";
     //var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog \"{options.Value.WeblogUrl}\"";
+    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog '{options.Value.WeblogUrl}'";
+
+    var containerParams = new Dictionary<string, string>();
 
     if (pipeline.PipelineParams != null)
         foreach (var param in pipeline.PipelineParams)
@@ -111,6 +113,8 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
             var sanitizedValue = value.ReplaceLineEndings();
 
             commandStr += $" --{param.ParamName} {sanitizedValue}";
+
+            containerParams[param.ParamName] = sanitizedValue;
         }
 
     var run = new PipelineRun
@@ -127,15 +131,16 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     await db.SaveChangesAsync();
 
-    var client = clientFactory.CreateClient(options.Value.HttpStartUrl);
+    var client = clientFactory.CreateClient("HttpStart");
 
     var containerRunRequest = new ContainerRunRequest
     {
         RunName = execReq.RunName,
-        Command = run.NextflowRunCommand
+        Command = run.NextflowRunCommand,
+        Parameters = containerParams
     };
 
-    var response = await client.PostAsJsonAsync("", containerRunRequest);
+    var response = await client.PostAsJsonAsync(options.Value.HttpStartUrl, containerRunRequest);
 
     // todo: parse check status and provide status updates about the orechstration there?
 

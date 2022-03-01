@@ -19,7 +19,7 @@ public partial class ContainerManager
 
         var environmentVariables = keyValuePairs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        var containerWithCreate = _azure.ContainerGroups.Define(containerGroupName)
+        var containerGroup = _azure.ContainerGroups.Define(containerGroupName)
             .WithRegion(_azure.ResourceGroups.GetByName(_containerConfig.ResourceGroupName).Region)
             .WithExistingResourceGroup(_containerConfig.ResourceGroupName)
             .WithLinux()
@@ -30,18 +30,12 @@ public partial class ContainerManager
                 .WithExternalTcpPort(80)
                 .WithCpuCoreCount(1.0)
                 .WithMemorySizeInGB(1)
-                .WithEnvironmentVariables(environmentVariables);
-
-        if (!string.IsNullOrWhiteSpace(req.Command))
-            containerWithCreate
-                .WithStartingCommandLine(req.Command);
-
-        var containerGroupWithCreate = containerWithCreate
-            .Attach()
+                .WithEnvironmentVariables(environmentVariables)
+                .WithStartingCommandLine(req.Command)
+                .Attach()
             .WithDnsPrefix(containerGroupName)
-            .WithRestartPolicy(ContainerGroupRestartPolicy.Never);
-
-        var containerGroup = containerGroupWithCreate.Create();
+            .WithRestartPolicy(ContainerGroupRestartPolicy.Never)
+            .Create();
 
         return containerGroup.Id;
     }
