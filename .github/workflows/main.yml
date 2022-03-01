@@ -35,14 +35,26 @@ jobs:
     - name: Build DACPAC
       run: dotnet build ./NextflowRunnerDB.Build --configuration Release
 
+    - name: Build Serverless
+      run: dotnet build ./NextflowRunner.Serverless --configuration Release
+
     - name: create API artifact
       run: dotnet publish ./NextflowRunner.API -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+    - name: create Serverless artifact
+      run: dotnet publish ./NextflowRunner.Serverless -c Release -o ${{env.DOTNET_ROOT}}/functions
 
     - name: Upload API artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: .net-app
         path: ${{env.DOTNET_ROOT}}/myapp
+
+    - name: Upload Serverless artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: func-app
+        path: ${{env.DOTNET_ROOT}}/functions
 
     - name: Upload DB artifact for deployment job
       uses: actions/upload-artifact@v2
@@ -55,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest    
     outputs:
       azure-webapp-name: ${{ steps.deploy-bicep.outputs.appServiceAppName }}
+      function-app-name: ${{ steps.deploy-bicep.outputs.functionAppName }}
       sqlserver: ${{ steps.deploy-bicep.outputs.sqlServerName }}
       sqlfqdn: ${{ steps.deploy-bicep.outputs.sqlServerFQDN }}
       dbname: ${{ steps.deploy-bicep.outputs.sqlDbName }}
@@ -126,12 +139,25 @@ jobs:
         name: .net-app
         path: ${{ github.workspace }}/webapp    
 
+    - name: Download Serverless artifact from build job
+      uses: actions/download-artifact@v2
+      with:
+        name: func-app
+        path: ${{ github.workspace }}/funcapp 
+
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ needs.provision.outputs.azure-webapp-name }}
         package: ./webapp
+
+    - name: 'Deploy to Function App'
+      uses: Azure/functions-action@v1
+      id: deploy-to-funcapp
+      with:
+        app-name: ${{ needs.provision.outputs.function-app-name }}
+        package: ./funcapp
 
     - name: logout
       run: |
