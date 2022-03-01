@@ -7,6 +7,7 @@ param storageAccountName string
 param storagePassphrase string
 @secure()
 param storageSASToken string
+param functionAppUrl string
 
 //param expireTime string = dateTimeAdd(utcNow('u'), 'P1Y')
 
@@ -67,7 +68,15 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         {
           name: 'AzureStorage__AZURE_STORAGE_SAS'
           value: storageSASToken
-        }        
+        }
+        {
+          name: 'OrchestratorClientOptions__WeblogUrl'
+          value: '${functionAppUrl}/api/WeblogTracer'
+        }
+        {
+          name: 'OrchestratorClientOptions__HttpStartUrl'
+          value: '${functionAppUrl}/api/ContainerManager_HttpStart'
+        }
       ]
     }
   }

@@ -21,7 +21,7 @@ public class WeblogTracer
     }
 
     [FunctionName("WeblogTracer")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
     [DurableClient] IDurableOrchestrationClient client)
     {
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
