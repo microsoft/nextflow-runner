@@ -1,1 +1,0 @@
-nextflow run /havoc/main.nf -w az://nextflow/work -profile azure --nextera 'az://nextflow/NexteraPE-PE.fa' --ref 'az://nextflow/ref.fa' --reads 'az://nextflow/*R{1,2}*fastq.gz'
