@@ -10,6 +10,7 @@ public record Pipeline
     public string Description { get; set; }
     public string GitHubUrl { get; set; }
     public string PipelineOptions { get; set; }
+    public string WorkingRootFolder { get; set; }
     
 
     public virtual ICollection<PipelineParam> PipelineParams { get; set; }

@@ -79,6 +79,8 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
     dbPipeline.PipelineName = pipeline.PipelineName;
     dbPipeline.Description = pipeline.Description;
     dbPipeline.GitHubUrl = pipeline.GitHubUrl;
+    dbPipeline.PipelineOptions = pipeline.PipelineOptions;
+    dbPipeline.WorkingRootFolder = pipeline.WorkingRootFolder;
 
     await db.SaveChangesAsync();
 
@@ -96,10 +98,11 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     var commandStr = "nextflow run";
 
-    var filename = " nextflow-io/hello";
-    //var filename = $" {pipeline.GitHubUrl}";
+    var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog {options.Value.WeblogUrl}";
+    commandStr += $"{filename} -name {execReq.RunName} -with-weblog {options.Value.WeblogUrl}";
+    commandStr += string.IsNullOrEmpty(pipeline.PipelineOptions) ? "" : $" {pipeline.PipelineOptions}";
+    commandStr += string.IsNullOrEmpty(pipeline.WorkingRootFolder) ? "" : $" -w {pipeline.WorkingRootFolder}/${execReq.RunName}";
 
     var containerParams = new Dictionary<string, string>();
 
@@ -134,8 +137,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
     var containerRunRequest = new ContainerRunRequest
     {
         RunName = execReq.RunName,
-        Command = run.NextflowRunCommand,
-        Parameters = containerParams
+        Command = run.NextflowRunCommand
     };
 
     var response = await client.PostAsJsonAsync(options.Value.HttpStartUrl, containerRunRequest);

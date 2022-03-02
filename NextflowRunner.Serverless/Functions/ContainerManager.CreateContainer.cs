@@ -14,16 +14,12 @@ public partial class ContainerManager
     {
         var containerGroupName = req.RunName + "-containergroup";
 
-        var environmentVariables = req.Parameters.Select(kvp => new EnvironmentVariable { Name = kvp.Key, Value = kvp.Value }).ToList();
-
-        environmentVariables.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
-
         var container = new Container(
             $"{containerGroupName}-container",
             req.ContainerImage,
             new ResourceRequirements { Requests = new ResourceRequests(1.5, 1.0) },
             req.Command.Split(' '),
-            environmentVariables: environmentVariables
+            environmentVariables: _containerEnvVariables
         );
 
         var group = new ContainerGroup()
