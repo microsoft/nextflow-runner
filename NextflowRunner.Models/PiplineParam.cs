@@ -11,4 +11,5 @@ public record PipelineParam
     public string ParamType { get; set; }
     public string ParamExample { get; set; }
     public string DefaultValue { get; set; }
+    public bool ParamIsFile { get; set; }
 }
