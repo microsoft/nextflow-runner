@@ -71,11 +71,11 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'OrchestratorClientOptions__WeblogUrl'
-          value: '${functionAppUrl}/api/WeblogTracer'
+          value: 'https://${functionAppUrl}/api/WeblogTracer'
         }
         {
           name: 'OrchestratorClientOptions__HttpStartUrl'
-          value: '${functionAppUrl}/api/ContainerManager_HttpStart'
+          value: 'https://${functionAppUrl}/api/ContainerManager_HttpStart'
         }
       ]
     }
