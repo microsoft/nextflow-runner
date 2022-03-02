@@ -617,6 +617,10 @@
             "type": "string",
             "nullable": true
           },
+          "pipelineOptions": {
+            "type": "string",
+            "nullable": true
+          },
           "pipelineParams": {
             "type": "array",
             "items": {
@@ -660,6 +664,9 @@
           "defaultValue": {
             "type": "string",
             "nullable": true
+          },
+          "paramIsFile": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
