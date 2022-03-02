@@ -1,9 +1,10 @@
-﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using Azure.Core;
+using Azure.Identity;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.Management.ContainerInstance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
 using Microsoft.Rest;
 using NextflowRunner.Models;
 using NextflowRunner.Serverless;
@@ -47,15 +48,8 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddScoped(options =>
         {
-            var auth = ConfidentialClientApplicationBuilder.Create(containerConfig.ClientId)
-                .WithTenantId(containerConfig.TenantId)
-                .WithClientSecret(containerConfig.ClientSecret)
-                .Build();
-
-            var authResult = auth.AcquireTokenForClient(new[] { "https://management.azure.com/.default" })
-                .ExecuteAsync().Result;
-
-            var creds = new TokenCredentials(authResult.AccessToken);
+            var tokenProvider = new ClientSecretCredential(containerConfig.TenantId, containerConfig.ClientId, containerConfig.ClientSecret);
+            var creds = new TokenCredentials(tokenProvider.GetToken(new TokenRequestContext(new[] { "https://management.azure.com/.default" })).Token);
 
             return new ContainerInstanceManagementClient(creds)
             {
