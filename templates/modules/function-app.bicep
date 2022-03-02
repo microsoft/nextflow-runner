@@ -15,6 +15,8 @@ param servicePrincipalClientSecret string
 @secure()
 param sqlConnection string
 
+var appInsightsName = '${functionAppName}-ai'
+
 resource functionStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   name: functionStorageAccountName
   location: location
@@ -24,6 +26,17 @@ resource functionStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' =
   kind: 'StorageV2'
   sku: {
     name: 'Standard_LRS'
+  }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
   }
 }
 
@@ -49,6 +62,14 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'InstrumentationKey=${appInsights.properties.InstrumentationKey}'
         }
         {
           name: 'ContainerConfiguration:ClientId'
