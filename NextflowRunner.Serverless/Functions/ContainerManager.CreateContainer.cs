@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Management.ContainerInstance.Fluent.Models;
+﻿using Microsoft.Azure.Management.ContainerInstance;
+using Microsoft.Azure.Management.ContainerInstance.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
@@ -13,29 +14,27 @@ public partial class ContainerManager
     {
         var containerGroupName = req.RunName + "-containergroup";
 
-        var keyValuePairs = req.Parameters.Select(kvp => kvp).ToList();
+        var environmentVariables = req.Parameters.Select(kvp => new EnvironmentVariable { Name = kvp.Key, Value = kvp.Value }).ToList();
+        environmentVariables.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
 
-        keyValuePairs.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
+        var container = new Container(
+            $"{containerGroupName}-container",
+            req.ContainerImage,
+            new ResourceRequirements { Requests = new ResourceRequests(1.5, 1.0) },
+            new[] { "nextflow", "run", "nextflow-io/hello" },
+            environmentVariables: environmentVariables
+        );
 
-        var environmentVariables = keyValuePairs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        var group = new ContainerGroup()
+        {
+            OsType = "Linux",
+            Location = _containerConfig.BatchRegion,
+            RestartPolicy = "Never",
+            Containers = new[] { container }
 
-        var containerGroup = _azure.ContainerGroups.Define(containerGroupName)
-            .WithRegion(_azure.ResourceGroups.GetByName(_containerConfig.ResourceGroupName).Region)
-            .WithExistingResourceGroup(_containerConfig.ResourceGroupName)
-            .WithLinux()
-            .WithPublicImageRegistryOnly()
-            .WithoutVolume()
-            .DefineContainerInstance(req.RunName + "-container")
-                .WithImage(req.ContainerImage)
-                .WithExternalTcpPort(80)
-                .WithCpuCoreCount(1.0)
-                .WithMemorySizeInGB(1)
-                .WithEnvironmentVariables(environmentVariables)
-                .WithStartingCommandLine(req.Command)
-                .Attach()
-            .WithDnsPrefix(containerGroupName)
-            .WithRestartPolicy(ContainerGroupRestartPolicy.Never)
-            .Create();
+        };
+
+        var containerGroup = _containerInstanceClient.ContainerGroups.BeginCreateOrUpdate(_containerConfig.SubscriptionId, containerGroupName, group);
 
         return containerGroup.Id;
     }
