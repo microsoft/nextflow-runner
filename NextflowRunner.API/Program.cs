@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NextflowRunner.API;
-using NextflowRunner.Models;
 using NextflowRunner.API.Models;
 using NextflowRunner.Models;
-using Renci.SshNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,7 +99,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
     var filename = " nextflow-io/hello";
     //var filename = $" {pipeline.GitHubUrl}";
 
-    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog '{options.Value.WeblogUrl}'";
+    commandStr += $"{filename} -name {execReq.RunName} -bg -with-weblog {options.Value.WeblogUrl}";
 
     var containerParams = new Dictionary<string, string>();
 
@@ -299,7 +297,7 @@ app.MapDelete("/pipelines/{pipelineId}/pipelineruns/{pipelineRunId}", async (int
 
 app.MapGet("/pipelineruns", async (NextflowRunnerContext db) =>
 {
-    var dbPipelineRuns = db.PipelineRuns.OrderByDescending(p=>p.PipelineRunId) ;
+    var dbPipelineRuns = await db.PipelineRuns.OrderByDescending(p=>p.PipelineRunId).ToListAsync();
 
     if (dbPipelineRuns == null) return Results.NotFound();
 

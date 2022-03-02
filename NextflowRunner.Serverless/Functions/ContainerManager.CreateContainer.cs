@@ -15,6 +15,7 @@ public partial class ContainerManager
         var containerGroupName = req.RunName + "-containergroup";
 
         var environmentVariables = req.Parameters.Select(kvp => new EnvironmentVariable { Name = kvp.Key, Value = kvp.Value }).ToList();
+
         environmentVariables.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
 
         var container = new Container(
@@ -31,11 +32,10 @@ public partial class ContainerManager
             Location = _containerConfig.BatchRegion,
             RestartPolicy = "Never",
             Containers = new[] { container }
-
         };
 
-        var containerGroup = _containerInstanceClient.ContainerGroups.BeginCreateOrUpdate(_containerConfig.SubscriptionId, containerGroupName, group);
+        var containerGroup = _containerInstanceClient.ContainerGroups.BeginCreateOrUpdate(_containerConfig.ResourceGroupName, containerGroupName, group);
 
-        return containerGroup.Id;
+        return containerGroup.Name;
     }
 }

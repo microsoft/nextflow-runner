@@ -31,18 +31,15 @@ public partial class ContainerManager
     }
 
     [FunctionName("ContainerManager")]
-    public async Task RunOrchestrator(
+    public static async Task RunOrchestrator(
         [OrchestrationTrigger] IDurableOrchestrationContext context)
     {
         var containerRunRequest = context.GetInput<ContainerRunRequest>();
 
-        var containerGroupId = string.Empty;
-
-        if (!context.IsReplaying)
-            containerGroupId = await context.CallActivityAsync<string>("ContainerManager_CreateContainer", containerRunRequest);
+        var containerGroupName = await context.CallActivityAsync<string>("ContainerManager_CreateContainer", containerRunRequest);
 
         await context.WaitForExternalEvent("WeblogTraceComplete", TimeSpan.FromHours(48));
 
-        await context.CallActivityAsync("ContainerManager_DestroyContainer", containerGroupId);
+        await context.CallActivityAsync("ContainerManager_DestroyContainer", containerGroupName);
     }
 }

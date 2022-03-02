@@ -1,7 +1,4 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using Microsoft.Azure;
-using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.Management.ContainerInstance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,17 +45,22 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(connectionString));
 
-        builder.Services.AddScoped<ContainerInstanceManagementClient>(options =>
+        builder.Services.AddScoped(options =>
         {
-            var auth = ConfidentialClientApplicationBuilder.Create(containerConfig.ClientId).WithClientSecret(containerConfig.ClientSecret).Build();
+            var auth = ConfidentialClientApplicationBuilder.Create(containerConfig.ClientId)
+                .WithTenantId(containerConfig.TenantId)
+                .WithClientSecret(containerConfig.ClientSecret)
+                .Build();
 
-            //var defaultCredential = new DefaultAzureCredential();
-            var authResult = auth.AcquireTokenForClient(new[] { "https://management.azure.com/.default" }).ExecuteAsync().Result;
+            var authResult = auth.AcquireTokenForClient(new[] { "https://management.azure.com/.default" })
+                .ExecuteAsync().Result;
+
             var creds = new TokenCredentials(authResult.AccessToken);
 
-            var client = new ContainerInstanceManagementClient(creds);
-            client.SubscriptionId = containerConfig.SubscriptionId;
-            return client;
+            return new ContainerInstanceManagementClient(creds)
+            {
+                SubscriptionId = containerConfig.SubscriptionId
+            };
         });
     }
 }
