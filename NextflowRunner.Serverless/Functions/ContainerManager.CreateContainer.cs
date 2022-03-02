@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Management.ContainerInstance.Fluent.Models;
+﻿using Microsoft.Azure.Management.ContainerInstance;
+using Microsoft.Azure.Management.ContainerInstance.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using NextflowRunner.Models;
@@ -13,36 +14,28 @@ public partial class ContainerManager
     {
         var containerGroupName = req.RunName + "-containergroup";
 
-        var keyValuePairs = req.Parameters.Select(kvp => kvp).ToList();
+        var environmentVariables = req.Parameters.Select(kvp => new EnvironmentVariable { Name = kvp.Key, Value = kvp.Value }).ToList();
 
-        keyValuePairs.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
+        environmentVariables.AddRange(_containerEnvVariables.Select(kvp => kvp).ToList());
 
-        var environmentVariables = keyValuePairs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        var container = new Container(
+            $"{containerGroupName}-container",
+            req.ContainerImage,
+            new ResourceRequirements { Requests = new ResourceRequests(1.5, 1.0) },
+            req.Command.Split(' '),
+            environmentVariables: environmentVariables
+        );
 
-        var containerWithCreate = _azure.ContainerGroups.Define(containerGroupName)
-            .WithRegion(_azure.ResourceGroups.GetByName(_containerConfig.ResourceGroupName).Region)
-            .WithExistingResourceGroup(_containerConfig.ResourceGroupName)
-            .WithLinux()
-            .WithPublicImageRegistryOnly()
-            .WithoutVolume()
-            .DefineContainerInstance(req.RunName + "-container")
-                .WithImage(req.ContainerImage)
-                .WithExternalTcpPort(80)
-                .WithCpuCoreCount(1.0)
-                .WithMemorySizeInGB(1)
-                .WithEnvironmentVariables(environmentVariables);
+        var group = new ContainerGroup()
+        {
+            OsType = "Linux",
+            Location = _containerConfig.BatchRegion,
+            RestartPolicy = "Never",
+            Containers = new[] { container }
+        };
 
-        if (!string.IsNullOrWhiteSpace(req.Command))
-            containerWithCreate
-                .WithStartingCommandLine(req.Command);
+        var containerGroup = _containerInstanceClient.ContainerGroups.BeginCreateOrUpdate(_containerConfig.ResourceGroupName, containerGroupName, group);
 
-        var containerGroupWithCreate = containerWithCreate
-            .Attach()
-            .WithDnsPrefix(containerGroupName)
-            .WithRestartPolicy(ContainerGroupRestartPolicy.Never);
-
-        var containerGroup = containerGroupWithCreate.Create();
-
-        return containerGroup.Id;
+        return containerGroup.Name;
     }
 }

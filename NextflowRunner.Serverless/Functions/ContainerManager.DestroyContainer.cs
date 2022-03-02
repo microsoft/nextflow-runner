@@ -1,13 +1,15 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using Microsoft.Azure.Management.ContainerInstance;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using System.Threading.Tasks;
 
 namespace NextflowRunner.Serverless.Functions;
 
 public partial class ContainerManager
 {
     [FunctionName("ContainerManager_DestroyContainer")]
-    public void DestroyContainer([ActivityTrigger] string containerGroupId)
+    public async Task DestroyContainer([ActivityTrigger] string containerGroupName)
     {
-        _azure.ContainerGroups.DeleteById(containerGroupId);
+        await _containerInstanceClient.ContainerGroups.DeleteAsync(_containerConfig.ResourceGroupName, containerGroupName);
     }
 }

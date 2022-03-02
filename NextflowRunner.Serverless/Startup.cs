@@ -1,7 +1,10 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Azure.Management.ContainerInstance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
+using Microsoft.Rest;
 using NextflowRunner.Models;
 using NextflowRunner.Serverless;
 using System;
@@ -41,5 +44,23 @@ public class Startup : FunctionsStartup
         builder.Services.AddSingleton(containerConfig);
 
         builder.Services.AddDbContext<NextflowRunnerContext>(options => options.UseSqlServer(connectionString));
+
+        builder.Services.AddScoped(options =>
+        {
+            var auth = ConfidentialClientApplicationBuilder.Create(containerConfig.ClientId)
+                .WithTenantId(containerConfig.TenantId)
+                .WithClientSecret(containerConfig.ClientSecret)
+                .Build();
+
+            var authResult = auth.AcquireTokenForClient(new[] { "https://management.azure.com/.default" })
+                .ExecuteAsync().Result;
+
+            var creds = new TokenCredentials(authResult.AccessToken);
+
+            return new ContainerInstanceManagementClient(creds)
+            {
+                SubscriptionId = containerConfig.SubscriptionId
+            };
+        });
     }
 }
