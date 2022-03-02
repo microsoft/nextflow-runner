@@ -6,8 +6,10 @@
             <div class="col font-weight-bold">Status</div>
         </div>
     </li>
-    @foreach (var p in @RunList)
-    {
-        <PipelineRun Run=p />
+    @if(@RunList != null) {
+        @foreach (var p in @RunList)
+        {
+            <PipelineRun Run=p />
+        }
     }
 </ul>

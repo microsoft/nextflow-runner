@@ -27,7 +27,13 @@
 
     @foreach (var p in Params)
     {
-        <PipelineParamFile Param=p AzKey="@AzureKey" />
+        @if(p.ParamIsFile)
+        {
+            <PipelineParamFile Param=p AzKey="@AzureKey" />
+        } else
+        {
+            <PipelineParamText ViewParam=p />
+        }
     }
     <br />
     <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>

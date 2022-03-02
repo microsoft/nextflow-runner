@@ -29,11 +29,9 @@ public partial class PipelineParamFile
 
     string status;
     bool fileSelected = false;
-    string uploadedFileDetails;
     string fileName;
     private readonly int maxAllowedSize = 200 * 1024 * 1024;
-
-    List<FileUploadProgress> uploadedFiles = new();
+    readonly List<FileUploadProgress> uploadedFiles = new();
 
 
     protected override void OnInitialized()
@@ -52,7 +50,7 @@ public partial class PipelineParamFile
                 AzureStorageConnectionSAS = azureContainerOptions.AzurE_STORAGE_SAS;
                 AzureStorageAccountName = azureContainerOptions.AzurE_STORAGE_ACCOUNTNAME;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 status = "Authorization Key is invalid!";
                 fileSelected = false;
@@ -107,8 +105,8 @@ public partial class PipelineParamFile
                                                 ".blob.core.windows.net/" +
                                                 "nextflowcontainer" + "/" + fileName);
 
-                        AzureSasCredential credential = new AzureSasCredential(AzureStorageConnectionSAS);
-                        BlobClient blobClient = new BlobClient(blobUri, credential, new BlobClientOptions());
+                        var credential = new AzureSasCredential(AzureStorageConnectionSAS);
+                        var blobClient = new BlobClient(blobUri, credential, new BlobClientOptions());
 
                         watch.Start();  //set timmer for debugging upload time
 

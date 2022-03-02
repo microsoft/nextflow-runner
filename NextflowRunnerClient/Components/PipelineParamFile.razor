@@ -1,19 +1,16 @@
 ﻿<EditForm class="col-form-label" Model="@Param">
-
-    <div class="form-group">  
-        
-        <label class="col-form-label">@Param.ParamName </label>:&nbsp;                 
+    <div class="form-group">
+        <label class="col-form-label">@Param.ParamName </label>:&nbsp;
         @if (!Valid)
         {
             <span class="alert-warning">Required</span>
         }
-        <br />    
+        <br />
         <InputFile OnChange="e => UploadFiletoAzBlobStorage(e)" />
         <br />
         <p>@status</p>
 
         <!--@((MarkupString)uploadedFileDetails)-->
-
         @if (fileSelected)
         {
             <p>
@@ -24,12 +21,11 @@
         @foreach (var file in uploadedFiles)  // coded so that we can allow multiple file upload in single control in the future
         {
             <div>
-                @file.FileName 
+                @file.FileName
                 &nbsp;&nbsp;<progress value="@file.UploadedBytes" max="@file.Size"></progress>&nbsp;
                 @file.UploadedPercentage.ToString("F1")%
                 (@FormatBytes(file.UploadedBytes) / @FormatBytes(file.Size))
             </div>
         }
-         
     </div>
 </EditForm>
