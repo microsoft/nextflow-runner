@@ -7,8 +7,8 @@ using Microsoft.Rest;
 string resourceGroupName = "demo-aci";
 string containerGroupName = "aci-task-demo";
 string containerImage = "nextflow/nextflow:21.10.6";
-string tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
-string subscriptionId = "a8f61e03-8571-438c-ac25-274d51ab7100";
+string tenantId = "<your-tenant-id>";
+string subscriptionId = "<your-subscription-id>";
 
 var defaultCredential = new DefaultAzureCredential();
 var defaultToken = defaultCredential.GetToken(new TokenRequestContext(new[] { "https://management.azure.com/.default" }, tenantId: tenantId)).Token;
