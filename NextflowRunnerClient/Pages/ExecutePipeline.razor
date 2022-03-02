@@ -1,7 +1,7 @@
 ﻿@page "/execute/{Id:int}"
 @using NextflowRunnerClient.Components
 <div>
-    <h2>Pipeline ID: @Id </h2>
+    <h2>Pipeline Id: @Id </h2>
     @if (SUBMITTED)
     {
         <h2>Submited</h2>
@@ -17,20 +17,24 @@
             </div>
         </div>
         <div>&nbsp;</div>
-        <div class="input-group">
-            <label class="col-form-label">Authorization Key: &nbsp; </label>         
-            <InputText @bind-Value="@AzureKey" required type=password />
-        </div>
+        @if (Params != null && Params.Any(p => p.ParamIsFile))
+        {
+            <div class="input-group">
+                <label class="col-form-label">Authorization Key: &nbsp; </label>
+                <InputText @bind-Value="@AzureKey" required type=password />
+            </div>
+        }
     </EditForm>
 
-    
+
 
     @foreach (var p in Params)
     {
-        @if(p.ParamIsFile)
+        @if (p.ParamIsFile)
         {
             <PipelineParamFile Param=p AzKey="@AzureKey" />
-        } else
+        }
+        else
         {
             <PipelineParamText ViewParam=p />
         }
