@@ -80,6 +80,7 @@ app.MapPut("/pipelines/{pipelineId}", async (int pipelineId, [FromBody] Pipeline
     dbPipeline.Description = pipeline.Description;
     dbPipeline.GitHubUrl = pipeline.GitHubUrl;
     dbPipeline.PipelineOptions = pipeline.PipelineOptions;
+    dbPipeline.WorkingRootFolder = pipeline.WorkingRootFolder;
 
     await db.SaveChangesAsync();
 
