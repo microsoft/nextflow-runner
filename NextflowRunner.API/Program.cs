@@ -101,6 +101,7 @@ app.MapPost("/pipelines/{pipelineId}", async (int pipelineId, ExecutionRequest e
 
     commandStr += $"{filename} -name {execReq.RunName} -with-weblog {options.Value.WeblogUrl}";
     commandStr += string.IsNullOrEmpty(pipeline.PipelineOptions) ? "" : $" {pipeline.PipelineOptions}";
+    commandStr += string.IsNullOrEmpty(pipeline.WorkingRootFolder) ? "" : $" -w {pipeline.WorkingRootFolder}/${execReq.RunName}";
 
     var containerParams = new Dictionary<string, string>();
 

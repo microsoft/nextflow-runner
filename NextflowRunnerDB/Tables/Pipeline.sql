@@ -4,5 +4,6 @@
     [PipelineName] NVARCHAR(50) NOT NULL, 
     [Description] NVARCHAR(MAX) NOT NULL, 
     [GitHubURL] NVARCHAR(250) NULL, 
-    [PipelineOptions] NVARCHAR(MAX) NULL
+    [PipelineOptions] NVARCHAR(MAX) NULL, 
+    [WorkingRootFolder] NVARCHAR(250) NULL
 )
