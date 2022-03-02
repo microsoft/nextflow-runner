@@ -1,50 +1,53 @@
-﻿
-using Microsoft.Azure.Management.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
-using Microsoft.Azure.Management.ContainerInstance.Fluent.Models;
+﻿using Azure.Core;
+using Azure.Identity;
+using Microsoft.Azure.Management.ContainerInstance;
+using Microsoft.Azure.Management.ContainerInstance.Models;
+using Microsoft.Rest;
 
 string resourceGroupName = "demo-aci";
 string containerGroupName = "aci-task-demo";
-string containerImage = "havocdemoacr.azurecr.io/havoc-trigger:v1";
+string containerImage = "nextflow/nextflow:21.10.6";
+string tenantId = "<your-tenant-id>";
+string subscriptionId = "<your-subscription-id>";
 
-//var credentials = SdkContext.AzureCredentialsFactory.FromDevice("94c9fc18-8343-4994-b49d-7f4caf0a1ebe", "72f988bf-86f1-41af-91ab-2d7cd011db47", AzureEnvironment.AzureGlobalCloud);
+var defaultCredential = new DefaultAzureCredential();
+var defaultToken = defaultCredential.GetToken(new TokenRequestContext(new[] { "https://management.azure.com/.default" }, tenantId: tenantId)).Token;
+var creds = new TokenCredentials(defaultToken);
 
-IAzure azure = Azure.Authenticate("my.azureauth").WithDefaultSubscription();
+var envVars = new List<EnvironmentVariable>
+{
+    new EnvironmentVariable{ Name = "STORAGE_NAME", Value = "hli6aqxtwj2yybatchsa"},
+    new EnvironmentVariable{ Name = "STORAGE_KEY", Value = ""},
+    new EnvironmentVariable{ Name = "BATCH_REGION", Value = "centralus"},
+    new EnvironmentVariable{ Name = "BATCH_ACCOUNT", Value = "hli6aqxtwj2yybatch"},
+    new EnvironmentVariable{ Name = "BATCH_KEY", Value = ""}
+};
+    
+Console.WriteLine($"\nCreating container group '{containerGroupName}'");
+ContainerInstanceManagementClient client = new ContainerInstanceManagementClient(creds);
+client.SubscriptionId = subscriptionId;
 
-Dictionary<string, string> envVars = new Dictionary<string, string>
-            {
-                {"STORAGE_NAME", "hli6aqxtwj2yybatchsa"},
-                {"STORAGE_KEY", ""},
-                {"BATCH_REGION", "centralus"},
-                {"BATCH_ACCOUNT", "hli6aqxtwj2yybatch"},
-                {"BATCH_KEY", ""}
-            };
+var container = new Container(
+    $"{containerGroupName}-1",
+    containerImage,
+    new ResourceRequirements { Requests = new ResourceRequests(1.5, 1.0)},
+    new[] { "nextflow", "run", "nextflow-io/hello" },
+    environmentVariables: envVars    
+    );
+
+var group = new ContainerGroup()
+{
+    OsType = "Linux",
+    Location = "centralus",
+    RestartPolicy = "Never",
+    Containers = new[] {container}
+
+};
 
 Console.WriteLine($"\nCreating container group '{containerGroupName}'");
 
-// Get the resource group's region
-IResourceGroup resGroup = azure.ResourceGroups.GetByName(resourceGroupName);
-Region azureRegion = resGroup.Region;
+client.SubscriptionId = subscriptionId;
+client.ContainerGroups.BeginCreateOrUpdate(resourceGroupName, containerGroupName, group);
+var logs = client.Containers.ListLogs(resourceGroupName, containerGroupName, $"{containerGroupName}-1");
 
-// Create the container group
-var containerGroup = azure.ContainerGroups.Define(containerGroupName)
-    .WithRegion(azureRegion)
-    .WithExistingResourceGroup(resourceGroupName)
-    .WithLinux()
-    .WithPrivateImageRegistry("havocdemoacr.azurecr.io","havocdemoacr","")
-    .WithoutVolume()
-    .DefineContainerInstance(containerGroupName + "-1")
-        .WithImage(containerImage)
-        .WithExternalTcpPort(80)
-        .WithCpuCoreCount(1.0)
-        .WithMemorySizeInGB(1)
-        .WithEnvironmentVariables(envVars)
-        .Attach()
-    .WithDnsPrefix(containerGroupName)
-    .WithRestartPolicy(ContainerGroupRestartPolicy.Never)
-    .Create();
-
-// Print the container's logs
-Console.WriteLine($"Logs for container '{containerGroupName}-1':");
-Console.WriteLine(containerGroup.GetLogContent(containerGroupName + "-1"));
+Console.WriteLine(logs.Content);

@@ -5,8 +5,9 @@
 		<UserSecretsId>f36e73e2-b4e8-4c2b-adec-3be1aa7fccbd</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.Common" Version="2.2.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-		<PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.38.0" />
+		<PackageReference Include="Microsoft.Azure.Management.ContainerInstance" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.5.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
