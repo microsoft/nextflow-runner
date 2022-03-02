@@ -21,7 +21,7 @@ public partial class ContainerManager
             $"{containerGroupName}-container",
             req.ContainerImage,
             new ResourceRequirements { Requests = new ResourceRequests(1.5, 1.0) },
-            new[] { "nextflow", "run", "nextflow-io/hello" },
+            req.Command.Split(' '),
             environmentVariables: environmentVariables
         );
 
