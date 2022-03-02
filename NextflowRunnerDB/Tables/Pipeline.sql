@@ -3,5 +3,6 @@
 	[PipelineId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [PipelineName] NVARCHAR(50) NOT NULL, 
     [Description] NVARCHAR(MAX) NOT NULL, 
-    [GitHubURL] NVARCHAR(250) NULL
+    [GitHubURL] NVARCHAR(250) NULL, 
+    [PipelineOptions] NVARCHAR(MAX) NULL
 )
