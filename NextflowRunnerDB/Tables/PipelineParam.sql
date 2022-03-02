@@ -6,6 +6,7 @@
     [ParamType] NVARCHAR(10) NOT NULL,
     [ParamExample] NVARCHAR(50) NULL, 
     [DefaultValue] NVARCHAR(500) NULL, 
+    [ParamIsFile] BIT NULL DEFAULT 1, 
     CONSTRAINT [FK_PipelineParam_Pipeline] FOREIGN KEY ([PipelineId]) REFERENCES [Pipeline]([PipelineId])
 )
 

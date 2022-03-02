@@ -42,4 +42,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PipelineRunId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3762d2da-745b-48d8-bf6f-d011e76f939b" ChangeDateTime="03/01/2022 22:44:41">
+    <Property Name="ElementName" Value="[dbo].[PipelineParam].[ParamInTypes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PipelineParam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ParamIsFile" />
+  </Operation>
 </Operations>
