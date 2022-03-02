@@ -5,15 +5,15 @@
         <div class="col">
             @switch (@Run.Status)
             {
-                case "Completed":
+                case "completed":
                     <span class="oi oi-circle-check">Completed</span>
                     break;
-                case "Running":
+                case "started":
                     <span class="oi oi-reload"></span>
                     break;
                 case "":
                 default:
-                    <span class="oi oi-question-mark"></span>
+                    <span class="">@Run.Status</span>
                     break;
             }
         </div>
