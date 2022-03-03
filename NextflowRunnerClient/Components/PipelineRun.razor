@@ -6,12 +6,14 @@
             @switch (@Run.Status)
             {
                 case "completed":
-                    <span class="oi oi-circle-check"></span>
+                    <span title="@Run.Status" class="oi oi-circle-check"></span>
                     break;
                 case "started":
-                    <span class="oi oi-reload"></span>
+                    <span title="@Run.Status" class="oi oi-reload"></span>
                     break;
-                case "":
+                case "error":
+                    <span title="@Run.Status" class="oi oi-warning"></span>
+                    break;
                 default:
                     <span class="">@Run.Status</span>
                     break;

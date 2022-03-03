@@ -16,8 +16,8 @@ public partial class ExecutePipeline
     protected Pipeline Pipeline { get; set; } = new ();
     protected ICollection<ViewParam> Params { get; set; } = new List<ViewParam>();
     protected ExecutionRequest ExecutionRequest { get; set; } = new() { RunName = string.Empty };
-    protected bool SUBMITTED { get; set; } = false;
-    protected bool VALID { get; set; } = false;
+    protected bool IsSubmitted { get; set; } = false;
+    protected bool IsValid { get; set; } = false;
     protected string AzureKey { get; set; } = "";
 
     protected async override Task OnInitializedAsync()
@@ -29,7 +29,7 @@ public partial class ExecutePipeline
 
     public async void ExecuteJob()
     {
-        SUBMITTED = true;
+        IsSubmitted = true;
 
         ExecutionRequest.RunName += RunNameUqEnd;
         ExecutionRequest.Parameters = Params

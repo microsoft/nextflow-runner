@@ -2,9 +2,9 @@
 @using NextflowRunnerClient.Components
 <div>
     <h2>Pipeline Id: @Id </h2>
-    @if (SUBMITTED)
+    @if (IsSubmitted)
     {
-        <h2>Submited</h2>
+        <h2>Submitted</h2>        
     }
 
     <EditForm class="form" Model=@ExecutionRequest>
@@ -26,8 +26,6 @@
         }
     </EditForm>
 
-
-
     @foreach (var p in Params)
     {
         @if (p.ParamIsFile)
@@ -40,5 +38,9 @@
         }
     }
     <br />
-    <button class="btn btn-primary" onclick=@(()=>{ExecuteJob();})>Execute</button>
+    <button class="btn btn-primary" disabled=@(IsSubmitted) onclick=@(()=>{ExecuteJob();})>Execute</button>
+    @if (IsSubmitted)
+    {
+        <NavLink class="btn btn-primary" href="runs">View Status</NavLink>
+    }
 </div>
