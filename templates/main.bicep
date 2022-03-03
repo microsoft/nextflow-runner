@@ -10,7 +10,6 @@ param nfRunnerFunctionAppStorageName string = '${prefix}funcsa'
 param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
 param batchAccountName string = '${prefix}batch'
 param batchStorageName string = '${prefix}batchsa'
-param acrName string = '${prefix}acr'
 
 @description('An existing keyvault with secrets for container instance and API apps')
 param keyVaultName string = 'nfrunnerkv'
@@ -57,15 +56,6 @@ module batch 'modules/batchservice.bicep' = {
     location: location
     batchAccountName: batchAccountName
     storageAccountName: batchStorageName    
-  }
-}
-
-module acr 'modules/container-registry.bicep' = {
-  name: 'nf-runner-acr'
-  params: {
-    kvName: keyVaultName
-    location: location
-    acrName: acrName    
   }
 }
 
@@ -124,4 +114,3 @@ output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
 output sqlUserName string = sqlDatabase.outputs.sqlUserName
 output batchAccountName string = batch.outputs.batchAccountName
-output acrLoginServer string = acr.outputs.acrLoginServer
