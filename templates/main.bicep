@@ -1,4 +1,5 @@
 param prefix string = 'nf-runner-${uniqueString(resourceGroup().id)}'
+param tagVersion string = 'nf-runner-version:v1.2.0'
 param location string = resourceGroup().location
 param sqlDatabaseName string = 'nf-runnerDB'
 param sqlServerName string = '${prefix}-sqlserver'
@@ -33,6 +34,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
 module sqlDatabase 'modules/sql-database.bicep' = {
   name: 'hackAPI-database'
   params: {
+    tagVersion: tagVersion
     environmentType: environmentType
     location: location
     sqlAdminUserName: sqlAdminUserName
@@ -45,6 +47,7 @@ module sqlDatabase 'modules/sql-database.bicep' = {
 module batch 'modules/batchservice.bicep' = {
   name: 'batch-account'
   params: {
+    tagVersion: tagVersion
     keyvaultName: keyVaultName
     location: location
     batchAccountName: batchAccountName
@@ -57,6 +60,7 @@ var sqlConn = 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Cata
 module functionApp 'modules/function-app.bicep' = {
   name: 'nextflow-runner-serverless'
   params: {
+    tagVersion: tagVersion
     location: location
     functionAppName: nfRunnerFunctionAppName
     functionStorageAccountName: nfRunnerFunctionAppStorageName
@@ -72,10 +76,8 @@ module functionApp 'modules/function-app.bicep' = {
 
 module appService 'modules/appservice.bicep' = {
   name: 'nextflow-runner-appservice'
-  dependsOn: [
-    batch
-  ]
   params: {
+    tagVersion: tagVersion
     environmentType: environmentType
     location: location
     nfRunnerAPIAppName: nfRunnerAPIAppName

@@ -1,4 +1,5 @@
-param location string = resourceGroup().location
+param location string
+param tagVersion string
 param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
 param storageAccountName string
@@ -23,9 +24,15 @@ param sqlConnection string
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
 
+var tagName = split(tagVersion, ':')[0]
+var tagValue = split(tagVersion, ':')[1]
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: nfRunnerAPIAppPlanName
   location: location
+  tags: {
+    '${tagName}': tagValue
+  }
   sku: {
     name: appServicePlanSkuName
     tier: appServicePlanTierName
@@ -39,6 +46,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
   name: nfRunnerAPIAppName
   location: location
+  tags: {
+    '${tagName}': tagValue
+  }
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
