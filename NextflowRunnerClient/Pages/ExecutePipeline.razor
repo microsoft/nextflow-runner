@@ -2,7 +2,7 @@
 @using NextflowRunnerClient.Components
 <div>
     <h2>Pipeline Id: @Id </h2>
-    @if (SUBMITTED)
+    @if (IsSubmitted)
     {
         <h2>Submitted</h2>        
     }
@@ -38,8 +38,8 @@
         }
     }
     <br />
-    <button class="btn btn-primary" disabled=@(SUBMITTED) onclick=@(()=>{ExecuteJob();})>Execute</button>
-    @if (SUBMITTED)
+    <button class="btn btn-primary" disabled=@(IsSubmitted) onclick=@(()=>{ExecuteJob();})>Execute</button>
+    @if (IsSubmitted)
     {
         <NavLink class="btn btn-primary" href="runs">View Status</NavLink>
     }
