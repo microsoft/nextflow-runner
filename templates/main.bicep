@@ -1,31 +1,24 @@
-param prefix string = '${uniqueString(resourceGroup().id)}'
+param prefix string = 'nf-runner-${uniqueString(resourceGroup().id)}'
 param location string = resourceGroup().location
 param sqlDatabaseName string = 'nf-runnerDB'
-param sqlServerName string = '${prefix}-${sqlDatabaseName}-server'
+param sqlServerName string = '${prefix}-sqlserver'
 param sqlAdminUserName string = 'nf-runner-admin'
-param nfRunnerAPIAppPlanName string = '${prefix}-nfrunner-plan'
-param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
-param nfRunnerFunctionAppName string = '${prefix}-nfrunner-serverless'
-param nfRunnerFunctionAppStorageName string = '${prefix}funcsa'
-param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
-param batchAccountName string = '${prefix}batch'
-param batchStorageName string = '${prefix}batchsa'
+param nfRunnerAPIAppPlanName string = '${prefix}-appPlan'
+param nfRunnerAPIAppName string = '${prefix}-api'
+param nfRunnerFunctionAppName string = '${prefix}-serverless'
+param nfRunnerFunctionAppStorageName string = substring('${replace(prefix, '-', '')}funcsa',0,24)
+param batchAccountName string = '${replace(prefix, '-', '')}batch'
+param batchStorageName string = substring('${replace(prefix, '-', '')}batchsa',0,24)
 
 @description('An existing keyvault with secrets for container instance and API apps')
 param keyVaultName string = 'nfrunnerkv'
 
+@description('A shared passphrase that allow users to upload files in the UI')
 @secure()
 param storagePassphrase string
 
 @secure()
-param weblogPostUrl string
-
-@secure()
 param sqlAdminPassword string
-
-@secure()
-@description('Github token for static web app deployment')
-param repositoryToken string
 
 @allowed([
   'nonprod'
@@ -88,22 +81,10 @@ module appService 'modules/appservice.bicep' = {
     nfRunnerAPIAppName: nfRunnerAPIAppName
     nfRunnerAPIAppPlanName: nfRunnerAPIAppPlanName
     sqlConnection: sqlConn
-    weblogPostUrl: weblogPostUrl
     storageAccountName: batch.outputs.batchAccountName
     storagePassphrase: storagePassphrase
     storageSASToken: keyvault.getSecret('storage-sas-token')
     functionAppUrl: functionApp.outputs.functionAppUrl
-  }
-}
-
-module clientApp 'modules/staticsite.bicep' = {
-  name: 'nextflow-runner-client'
-  params: {
-    swaSiteName: nfRunnerClientAppName
-    location: location
-    repositoryToken: repositoryToken
-    repositoryBranch: 'main'
-    repositoryUrl: 'https://github.com/microsoft/nextflow-runner'
   }
 }
 

@@ -1,7 +1,6 @@
 param location string = resourceGroup().location
 param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
-param weblogPostUrl string
 param storageAccountName string
 @secure()
 param storagePassphrase string
@@ -52,11 +51,7 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           type: 'SQLAzure'
         }
       ]
-      appSettings: [
-        {
-          name: 'SSHConnection__WEBLOG_URL'
-          value: weblogPostUrl
-        }
+      appSettings: [        
         {
           name: 'AzureStorage__AZURE_STORAGE_ACCOUNTNAME'
           value: storageAccountName
@@ -71,11 +66,11 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'OrchestratorClientOptions__WeblogUrl'
-          value: 'https://${functionAppUrl}/api/WeblogTracer'
+          value: '${functionAppUrl}/api/WeblogTracer'
         }
         {
           name: 'OrchestratorClientOptions__HttpStartUrl'
-          value: 'https://${functionAppUrl}/api/ContainerManager_HttpStart'
+          value: '${functionAppUrl}/api/ContainerManager_HttpStart'
         }
       ]
     }
