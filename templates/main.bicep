@@ -10,7 +10,7 @@ param nfRunnerFunctionAppName string = '${prefix}-serverless'
 param nfRunnerFunctionAppStorageName string = substring('${replace(prefix, '-', '')}funcsa',0,24)
 param batchAccountName string = '${replace(prefix, '-', '')}batch'
 param batchStorageName string = substring('${replace(prefix, '-', '')}batchsa',0,24)
-param keyVaultName string = '${prefix}-kv'
+param keyVaultName string = substring('${replace(prefix, '-', '')}-kv',0,24)
 
 @description('A shared passphrase that allow users to upload files in the UI')
 @secure()
