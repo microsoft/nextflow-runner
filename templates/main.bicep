@@ -12,6 +12,9 @@ param storagePassphrase string
 param sqlAdminPassword string
 
 @secure()
+param azureCredentials object
+
+@secure()
 param keyvaultSpnObjectId string
 
 @allowed([
@@ -114,8 +117,8 @@ module functionApp 'modules/function-app.bicep' = {
     batchStorageAccountKey: keyvault.getSecret('storage-key')
     batchAccountName: batch.outputs.batchAccountName
     batchAccountKey: keyvault.getSecret('batch-key')
-    servicePrincipalClientId: keyvault.getSecret('SP-AzureFunction-ClientId')
-    servicePrincipalClientSecret: keyvault.getSecret('SP-AzureFunction-ClientSecret')
+    servicePrincipalClientId: azureCredentials.clientId
+    servicePrincipalClientSecret: azureCredentials.clientSecret
     sqlConnection: sqlConn
   }
 }
