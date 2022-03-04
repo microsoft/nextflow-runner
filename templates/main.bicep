@@ -7,13 +7,12 @@ param sqlAdminUserName string = 'nfr-admin'
 @description('A shared passphrase that allow users to upload files in the UI')
 @secure()
 param storagePassphrase string
-
 @secure()
 param sqlAdminPassword string
-
 @secure()
-param azureCredentials object
-
+param azureClientId string
+@secure()
+param azureClientSecret string
 @secure()
 param keyvaultSpnObjectId string
 
@@ -117,8 +116,8 @@ module functionApp 'modules/function-app.bicep' = {
     batchStorageAccountKey: keyvault.getSecret('storage-key')
     batchAccountName: batch.outputs.batchAccountName
     batchAccountKey: keyvault.getSecret('batch-key')
-    servicePrincipalClientId: azureCredentials.clientId
-    servicePrincipalClientSecret: azureCredentials.clientSecret
+    servicePrincipalClientId: azureClientId
+    servicePrincipalClientSecret: azureClientSecret
     sqlConnection: sqlConn
   }
 }

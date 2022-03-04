@@ -93,7 +93,7 @@ jobs:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./templates/main.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod azureCredentials="${{ secrets.AZURE_CREDENTIALS }}" sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} storagePassphrase=${{ secrets.STORAGE_PASSPHRASE }} keyvaultSpnObjectId=${{ secrets.KV_SPN_OBJECTID }}' 
+        parameters: 'environmentType=nonprod azureClientId="${{ secrets.AZURE_CLIENTID }}" azureClientSecret=${{ secrets.AZURE_CLIENTSECRET }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} storagePassphrase=${{ secrets.STORAGE_PASSPHRASE }} keyvaultSpnObjectId=${{ secrets.KV_SPN_OBJECTID }}' 
 
   deploy_database:
     name: Deploy DACPAC
