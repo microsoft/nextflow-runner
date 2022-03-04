@@ -2,15 +2,7 @@ param prefix string = 'nfr-${uniqueString(resourceGroup().id)}'
 param tagVersion string = 'nfr-version:v1.2.0'
 param location string = resourceGroup().location
 param sqlDatabaseName string = 'nfr-DB'
-param sqlServerName string = '${prefix}-sqlserver'
 param sqlAdminUserName string = 'nfr-admin'
-param nfRunnerAPIAppPlanName string = '${prefix}-appPlan'
-param nfRunnerAPIAppName string = '${prefix}-api'
-param nfRunnerFunctionAppName string = '${prefix}-serverless'
-param nfRunnerFunctionAppStorageName string = substring('${replace(prefix, '-', '')}funcsa',0,24)
-param batchAccountName string = substring('${replace(prefix, '-', '')}batch',0,24)
-param batchStorageName string = substring('${replace(prefix, '-', '')}batchsa',0,24)
-param keyVaultName string = substring('${replace(prefix, '-', '')}kv',0,24)
 
 @description('A shared passphrase that allow users to upload files in the UI')
 @secure()
@@ -27,6 +19,16 @@ param keyvaultSpnObjectId string
   'prod'
 ])
 param environmentType string
+
+var cleanPrefix = replace(prefix, '-', '')
+var sqlServerName = '${prefix}-sqlserver'
+var nfRunnerAPIAppPlanName = '${prefix}-appPlan'
+var nfRunnerAPIAppName = '${prefix}-api'
+var nfRunnerFunctionAppName = '${prefix}-serverless'
+var nfRunnerFunctionAppStorageName = length(cleanPrefix) + 6 > 24 ? substring('${cleanPrefix}funcsa',0,24) : '${cleanPrefix}funcsa'
+var batchAccountName = length(cleanPrefix) + 5 > 24 ? substring('${cleanPrefix}batch',0,24) : '${cleanPrefix}batch'
+var batchStorageName = length(cleanPrefix) + 7 > 24 ? substring('${cleanPrefix}batchsa',0,24) : '${cleanPrefix}batchsa'
+var keyVaultName = length(cleanPrefix) + 2 > 24 ? substring('${cleanPrefix}kv',0,24) : '${cleanPrefix}kv'
 
 var tenantId = subscription().tenantId
 var roleName = 'Key Vault Secrets Officer'
