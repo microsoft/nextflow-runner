@@ -1,6 +1,7 @@
 param location string
 param tagVersion string
 param functionAppName string
+param appServicePlanName string
 param functionStorageAccountName string
 param batchStorageAccountName string
 @secure()
@@ -46,6 +47,19 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
+}
+
+resource plan 'Microsoft.Web/serverfarms@2020-12-01' = {
+  name: appServicePlanName
+  location: location
+  tags: {
+    '${tagName}': tagValue
+  }
+  kind: 'functionapp'
+  sku: {
+    name: 'Y1'
+  }
+  properties: {}
 }
 
 resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
