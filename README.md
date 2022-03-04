@@ -32,6 +32,7 @@ Nextflow is a commonly used workflow manager in the scientific community. By pro
 
 
 # Getting started
+See a preview of this application at [aka.ms/nextflow-runner](https://aka.ms/nextflow-runner).
 
 ## Nextflow Cloud Runner
 Run a Nextflow pipeline in the cloud
@@ -45,10 +46,59 @@ This project has three parts, a database project, an Minimal API project, and a 
 You can download and run the projects locally, .NET 6.0 is required.
 
 ## Running on Azure
-You can use the provided bicep templates to deploy and run on Azure.
-- Pre-reqs
-- Backend provisioning with GitHub workflow
-- Frontend provisioning 
+Use the following steps for a new, greenfield, deployment to Azure.
+### Fork and Clone 
+[Fork](https://github.com/Microsoft/nextflow-runner/fork) this Repo. Then, clone it to your local machine (or open in Codespaces!).
+
+![create a codespace animated gif](./docs/imgs/create-codespace.gif)
+
+### Setup the prerequisites
+1. Create a Resource Group in your Azure Subscription. You can accomplish this task using the Portal, Azure PowerShell, or the Azure CLI.
+```
+az login
+az account set --subscriptionId <your-sub-id>
+az group create --name <resource-group-name> --location <location i.e. "centralus">
+```
+
+2. Create an Azure AD service principal that has the `Owner` role assigned to the resource group created in the previous step. Pipe the output to a file, or save the results to a text file for later reference.
+```
+az ad sp create-for-rbac --name githubworkflow --role Owner --scope '/subscription/<your-sub-id>/resourceGroups/<resource-group-name>' --sdk-auth > my.azureauth
+```
+This command will save the output to `my.azureauth`. Open the file and use this information in the next steps.
+
+3. Browse to your GitHub repo and switch to the `Settings` tab. From the `Security` section, choose `Secrets -> Actions`.
+Create 3 new Repository Secrets with these properties:
+<table>
+    <thead>
+        <tr>
+            <th>AZURE_CREDENTIALS</th>
+            <th>AZURE_CLIENTID</th>
+            <th>AZURE_CLIENTSECRET</th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Paste entire contents of my.azureauth file</td>
+        <td>clientId value from my.azureauth file</td>
+        <td>clientSecret value from my.azureauth file</td>
+    </tr>
+    <tr valign="top">
+        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-creds.png" /></td>
+        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-clientid.png" /></td>
+        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-clientsecret.png" /></td>
+    </tr>
+    <tbody>
+</table>
+
+
+
+
+1. Provision the backend resources and deploy code with GitHub Actions workflow
+1. Create an Azure Static Web App for the frontend
+
+### Pre-reqs
+- Create service principal in Azure Subscription to authenticate with GitHub
+- Create GitHub secrets
 
 
 ## Contributing
