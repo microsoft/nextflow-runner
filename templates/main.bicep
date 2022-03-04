@@ -27,6 +27,7 @@ var sqlServerName = '${prefix}-sqlserver'
 var nfRunnerAPIAppPlanName = '${prefix}-appPlan'
 var nfRunnerAPIAppName = '${prefix}-api'
 var nfRunnerFunctionAppName = '${prefix}-serverless'
+var nfRunnerFuctionsAppPlanName = '${prefix}-serverlessPlan'
 var nfRunnerFunctionAppStorageName = length(cleanPrefix) + 6 > 24 ? substring('${cleanPrefix}funcsa',0,24) : '${cleanPrefix}funcsa'
 var batchAccountName = length(cleanPrefix) + 5 > 24 ? substring('${cleanPrefix}batch',0,24) : '${cleanPrefix}batch'
 var batchStorageName = length(cleanPrefix) + 7 > 24 ? substring('${cleanPrefix}batchsa',0,24) : '${cleanPrefix}batchsa'
@@ -111,6 +112,7 @@ module functionApp 'modules/function-app.bicep' = {
     tagVersion: tagVersion
     location: location
     functionAppName: nfRunnerFunctionAppName
+    appServicePlanName: nfRunnerFuctionsAppPlanName
     functionStorageAccountName: nfRunnerFunctionAppStorageName
     batchStorageAccountName: batch.outputs.storageAccountName
     batchStorageAccountKey: keyvault.getSecret('storage-key')
