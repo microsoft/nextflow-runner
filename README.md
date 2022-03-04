@@ -71,20 +71,27 @@ Create 3 new Repository Secrets with these properties:
 <table>
     <thead>
         <tr>
-            <th>AZURE_CREDENTIALS</th>
-            <th>AZURE_CLIENTID</th>
-            <th>AZURE_CLIENTSECRET</th>
+            <th>Name</th>
+            <th>Value</th>
+            <th>&nbsp;</th>
+        </tr>
+        <tr>
         </tr>
     </thead>
     <tbody>
-    <tr>
-        <td>Paste entire contents of my.azureauth file</td>
-        <td>clientId value from my.azureauth file</td>
-        <td>clientSecret value from my.azureauth file</td>
+    <tr valign="top">
+        <td>AZURE_CREDENTIALS</td>
+        <td>entire contents of my.azureauth file</td>
+        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-creds.png" /></td>
     </tr>
     <tr valign="top">
-        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-creds.png" /></td>
+        <td>AZURE_CLIENTID</td>
+        <td>clientId value from my.azureauth file</td>
         <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-clientid.png" /></td>
+    </tr>
+    <tr valign="top">
+        <td>AZURE_CLIENTSECRET</td>
+        <td>clientSecret value from my.azureauth file</td>
         <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-clientsecret.png" /></td>
     </tr>
     <tbody>
