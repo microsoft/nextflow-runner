@@ -8,6 +8,7 @@ on:
       - 'docs/**'
       - 'NextflowRunnerClient/**'
       - 'templates/**'
+      - '.github/**'
   workflow_dispatch:
 
 jobs:
