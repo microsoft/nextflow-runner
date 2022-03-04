@@ -1,16 +1,16 @@
-param prefix string = 'nf-runner-${uniqueString(resourceGroup().id)}'
-param tagVersion string = 'nf-runner-version:v1.2.0'
+param prefix string = 'nfr-${uniqueString(resourceGroup().id)}'
+param tagVersion string = 'nfr-version:v1.2.0'
 param location string = resourceGroup().location
-param sqlDatabaseName string = 'nf-runnerDB'
+param sqlDatabaseName string = 'nfr-DB'
 param sqlServerName string = '${prefix}-sqlserver'
-param sqlAdminUserName string = 'nf-runner-admin'
+param sqlAdminUserName string = 'nfr-admin'
 param nfRunnerAPIAppPlanName string = '${prefix}-appPlan'
 param nfRunnerAPIAppName string = '${prefix}-api'
 param nfRunnerFunctionAppName string = '${prefix}-serverless'
 param nfRunnerFunctionAppStorageName string = substring('${replace(prefix, '-', '')}funcsa',0,24)
-param batchAccountName string = '${replace(prefix, '-', '')}batch'
+param batchAccountName string = substring('${replace(prefix, '-', '')}batch',0,24)
 param batchStorageName string = substring('${replace(prefix, '-', '')}batchsa',0,24)
-param keyVaultName string = substring('${replace(prefix, '-', '')}-kv',0,24)
+param keyVaultName string = substring('${replace(prefix, '-', '')}kv',0,24)
 
 @description('A shared passphrase that allow users to upload files in the UI')
 @secure()
