@@ -1,7 +1,7 @@
-param location string = resourceGroup().location
+param location string
+param tagVersion string
 param nfRunnerAPIAppPlanName string
 param nfRunnerAPIAppName string
-param weblogPostUrl string
 param storageAccountName string
 @secure()
 param storagePassphrase string
@@ -24,9 +24,15 @@ param sqlConnection string
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
 
+var tagName = split(tagVersion, ':')[0]
+var tagValue = split(tagVersion, ':')[1]
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: nfRunnerAPIAppPlanName
   location: location
+  tags: {
+    '${tagName}': tagValue
+  }
   sku: {
     name: appServicePlanSkuName
     tier: appServicePlanTierName
@@ -40,6 +46,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
   name: nfRunnerAPIAppName
   location: location
+  tags: {
+    '${tagName}': tagValue
+  }
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
@@ -52,11 +61,7 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           type: 'SQLAzure'
         }
       ]
-      appSettings: [
-        {
-          name: 'SSHConnection__WEBLOG_URL'
-          value: weblogPostUrl
-        }
+      appSettings: [        
         {
           name: 'AzureStorage__AZURE_STORAGE_ACCOUNTNAME'
           value: storageAccountName
@@ -71,11 +76,11 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'OrchestratorClientOptions__WeblogUrl'
-          value: 'https://${functionAppUrl}/api/WeblogTracer'
+          value: '${functionAppUrl}/api/WeblogTracer'
         }
         {
           name: 'OrchestratorClientOptions__HttpStartUrl'
-          value: 'https://${functionAppUrl}/api/ContainerManager_HttpStart'
+          value: '${functionAppUrl}/api/ContainerManager_HttpStart'
         }
       ]
     }

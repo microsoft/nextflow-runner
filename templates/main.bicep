@@ -1,32 +1,26 @@
-param prefix string = '${uniqueString(resourceGroup().id)}'
+param prefix string = 'nf-runner-${uniqueString(resourceGroup().id)}'
+param tagVersion string = 'nf-runner-version:v1.2.0'
 param location string = resourceGroup().location
 param sqlDatabaseName string = 'nf-runnerDB'
-param sqlServerName string = '${prefix}-${sqlDatabaseName}-server'
+param sqlServerName string = '${prefix}-sqlserver'
 param sqlAdminUserName string = 'nf-runner-admin'
-param nfRunnerAPIAppPlanName string = '${prefix}-nfrunner-plan'
-param nfRunnerAPIAppName string = '${prefix}-nf-runner-api'
-param nfRunnerFunctionAppName string = '${prefix}-nfrunner-serverless'
-param nfRunnerFunctionAppStorageName string = '${prefix}funcsa'
-param nfRunnerClientAppName string = 'nextflowrunnerClient-${prefix}'
-param batchAccountName string = '${prefix}batch'
-param batchStorageName string = '${prefix}batchsa'
-param acrName string = '${prefix}acr'
+param nfRunnerAPIAppPlanName string = '${prefix}-appPlan'
+param nfRunnerAPIAppName string = '${prefix}-api'
+param nfRunnerFunctionAppName string = '${prefix}-serverless'
+param nfRunnerFunctionAppStorageName string = substring('${replace(prefix, '-', '')}funcsa',0,24)
+param batchAccountName string = '${replace(prefix, '-', '')}batch'
+param batchStorageName string = substring('${replace(prefix, '-', '')}batchsa',0,24)
+param keyVaultName string = '${prefix}-kv'
 
-@description('An existing keyvault with secrets for container instance and API apps')
-param keyVaultName string = 'nfrunnerkv'
-
+@description('A shared passphrase that allow users to upload files in the UI')
 @secure()
 param storagePassphrase string
-
-@secure()
-param weblogPostUrl string
 
 @secure()
 param sqlAdminPassword string
 
 @secure()
-@description('Github token for static web app deployment')
-param repositoryToken string
+param keyvaultSpnObjectId string
 
 @allowed([
   'nonprod'
@@ -34,13 +28,57 @@ param repositoryToken string
 ])
 param environmentType string
 
-resource keyvault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
+var tenantId = subscription().tenantId
+var roleName = 'Key Vault Secrets Officer'
+
+var roleIdMapping = {
+  'Key Vault Administrator': '00482a5a-887f-4fb3-b363-3b7fe8e74483'
+  'Key Vault Certificates Officer': 'a4417e6f-fecd-4de8-b567-7b0420556985'
+  'Key Vault Crypto Officer': '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
+  'Key Vault Crypto Service Encryption User': 'e147488a-f6f5-4113-8e2d-b22465e65bf6'
+  'Key Vault Crypto User': '12338af0-0e69-4776-bea7-57ae8d297424'
+  'Key Vault Reader': '21090545-7ca7-4776-b22c-e363652d74d2'
+  'Key Vault Secrets Officer': 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+  'Key Vault Secrets User': '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
+var tagKvp = split(tagVersion, ':')
+
+resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
   name: keyVaultName
+  location: location
+  tags: {
+    '${tagKvp[0]}': tagKvp[1]
+  }
+  properties: {
+    sku: {
+      name: 'standard'
+      family: 'A'
+    }
+    tenantId: tenantId
+    enabledForTemplateDeployment: true
+    enableRbacAuthorization: true
+    networkAcls: {
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
+    }
+  }
+}
+
+resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(roleIdMapping[roleName],keyvaultSpnObjectId,keyvault.id)
+  scope: keyvault
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleIdMapping[roleName])
+    principalId: keyvaultSpnObjectId
+    principalType: 'ServicePrincipal'
+  }
 }
 
 module sqlDatabase 'modules/sql-database.bicep' = {
   name: 'hackAPI-database'
   params: {
+    tagVersion: tagVersion
     environmentType: environmentType
     location: location
     sqlAdminUserName: sqlAdminUserName
@@ -53,19 +91,11 @@ module sqlDatabase 'modules/sql-database.bicep' = {
 module batch 'modules/batchservice.bicep' = {
   name: 'batch-account'
   params: {
+    tagVersion: tagVersion
     keyvaultName: keyVaultName
     location: location
     batchAccountName: batchAccountName
     storageAccountName: batchStorageName    
-  }
-}
-
-module acr 'modules/container-registry.bicep' = {
-  name: 'nf-runner-acr'
-  params: {
-    kvName: keyVaultName
-    location: location
-    acrName: acrName    
   }
 }
 
@@ -74,6 +104,7 @@ var sqlConn = 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Cata
 module functionApp 'modules/function-app.bicep' = {
   name: 'nextflow-runner-serverless'
   params: {
+    tagVersion: tagVersion
     location: location
     functionAppName: nfRunnerFunctionAppName
     functionStorageAccountName: nfRunnerFunctionAppStorageName
@@ -89,31 +120,17 @@ module functionApp 'modules/function-app.bicep' = {
 
 module appService 'modules/appservice.bicep' = {
   name: 'nextflow-runner-appservice'
-  dependsOn: [
-    batch
-  ]
   params: {
+    tagVersion: tagVersion
     environmentType: environmentType
     location: location
     nfRunnerAPIAppName: nfRunnerAPIAppName
     nfRunnerAPIAppPlanName: nfRunnerAPIAppPlanName
     sqlConnection: sqlConn
-    weblogPostUrl: weblogPostUrl
     storageAccountName: batch.outputs.batchAccountName
     storagePassphrase: storagePassphrase
     storageSASToken: keyvault.getSecret('storage-sas-token')
     functionAppUrl: functionApp.outputs.functionAppUrl
-  }
-}
-
-module clientApp 'modules/staticsite.bicep' = {
-  name: 'nextflow-runner-client'
-  params: {
-    swaSiteName: nfRunnerClientAppName
-    location: location
-    repositoryToken: repositoryToken
-    repositoryBranch: 'main'
-    repositoryUrl: 'https://github.com/microsoft/nextflow-runner'
   }
 }
 
@@ -124,4 +141,3 @@ output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
 output sqlUserName string = sqlDatabase.outputs.sqlUserName
 output batchAccountName string = batch.outputs.batchAccountName
-output acrLoginServer string = acr.outputs.acrLoginServer

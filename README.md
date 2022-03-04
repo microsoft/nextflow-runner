@@ -1,5 +1,12 @@
+| Backend | Frontend |
+| ------- | -------- |
+| [![Nextflow-Runner API](https://github.com/microsoft/nextflow-runner/actions/workflows/main.yml/badge.svg)](https://github.com/microsoft/nextflow-runner/actions/workflows/main.yml) | [![Client App](https://github.com/microsoft/nextflow-runner/actions/workflows/azure-static-web-apps-happy-ocean-0f6450210.yml/badge.svg)](https://github.com/microsoft/nextflow-runner/actions/workflows/azure-static-web-apps-happy-ocean-0f6450210.yml) |
 
 # Introduction
+| :exclamation:  This is a starter-kit. There are several conditions that must be addressed before running in a production or enterprise scenario. Use this as a starting place and ensure you meet your organizations' security, performance, exception handling, monitoring and deployment concerns.  |
+|-----------------------------------------|
+
+Please submit a new issue to address any concerns you might find, or consider making a pull request.
 
 ## What?
 A lightweight application designed to allow users to run Nextflow jobs without setting up Nextflow on Azure. It allows users to bring their own data, select from a list of preconfigured pipelines and execute a pipeline.
@@ -39,6 +46,9 @@ You can download and run the projects locally, .NET 6.0 is required.
 
 ## Running on Azure
 You can use the provided bicep templates to deploy and run on Azure.
+- Pre-reqs
+- Backend provisioning with GitHub workflow
+- Frontend provisioning 
 
 
 ## Contributing

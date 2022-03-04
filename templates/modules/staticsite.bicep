@@ -1,3 +1,4 @@
+// This template is no longer used by the project, but is kept for reference
 param location string = resourceGroup().location
 param swaSiteName string
 param repositoryUrl string = 'https://github.com/microsoft/nextflow-runner'

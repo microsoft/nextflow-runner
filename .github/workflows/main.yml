@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'docs/**'
+      - 'NextflowRunnerClient/**'
   workflow_dispatch:
 
 env:
@@ -90,7 +93,7 @@ jobs:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./templates/main.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} repositoryToken=${{ secrets.SWA_REPO_PAT }} weblogPostUrl=${{ secrets.WEBLOG_POST_URL }} storagePassphrase=${{ secrets.STORAGE_PASSPHRASE }}' 
+        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} storagePassphrase=${{ secrets.STORAGE_PASSPHRASE }} keyvaultSpnObjectId=${{ secrets.KV_SPN_OBJECTID }}' 
 
   deploy_database:
     name: Deploy DACPAC

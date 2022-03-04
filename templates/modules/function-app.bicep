@@ -1,4 +1,5 @@
-param location string = resourceGroup().location
+param location string
+param tagVersion string
 param functionAppName string
 param functionStorageAccountName string
 param batchStorageAccountName string
@@ -16,12 +17,15 @@ param servicePrincipalClientSecret string
 param sqlConnection string
 
 var appInsightsName = '${functionAppName}-ai'
+var tagName = split(tagVersion, ':')[0]
+var tagValue = split(tagVersion, ':')[1]
 
 resource functionStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   name: functionStorageAccountName
   location: location
   tags: {
     'ObjectName': functionAppName
+    '${tagName}': tagValue
   }
   kind: 'StorageV2'
   sku: {
@@ -32,6 +36,10 @@ resource functionStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' =
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightsName
   location: location
+  tags: {
+    'ObjectName': functionAppName
+    '${tagName}': tagValue
+  }
   kind: 'web'
   properties: {
     Application_Type: 'web'
@@ -43,6 +51,9 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
   name: functionAppName
   location: location
+  tags: {
+    '${tagName}': tagValue
+  }
   kind: 'functionapp'
   properties: {
     siteConfig: {
