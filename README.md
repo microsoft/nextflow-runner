@@ -9,7 +9,7 @@
 Please submit a new issue to address any concerns you might find, or consider making a pull request.
 
 ## What?
-A lightweight application designed to allow users to run Nextflow jobs without setting up Nextflow on Azure. It allows users to bring their own data, select from a list of preconfigured pipelines and execute a pipeline.
+A lightweight application designed to allow users to run Nextflow jobs, without setting up Nextflow, on Azure. It allows users to bring their own data, select from a list of preconfigured pipelines and execute a pipeline.
 
 All output is stored in an Azure storage account and can be downloaded for further downstream processing.
 
@@ -35,18 +35,19 @@ Nextflow is a commonly used workflow manager in the scientific community. By pro
 See a preview of this application at [aka.ms/nextflow-runner](https://aka.ms/nextflow-runner).
 
 ## Nextflow Cloud Runner
-Run a Nextflow pipeline in the cloud
+Architecture diagram
 
 ![Diagram of cloud resources deployed by project](./docs/imgs/nextflow-runner.png)
 
 ## Requirements
-This project has three parts, a database project, an Minimal API project, and a Blazor UI application. We've also included the necessary bicept templates to create and deploy the resources on Azure.
+This project has three parts, a database project, an Minimal API project, and a Blazor UI application. We've also included the necessary Bicep templates to create and deploy the resources on Azure.
 
 ## Running locally
 You can download and run the projects locally, .NET 6.0 is required.
 
 ## Running on Azure
 Use the following steps to deploy in your own Azure subscription.
+
 ### Fork and Clone 
 [Fork](https://github.com/Microsoft/nextflow-runner/fork) this Repo. Then, clone it to your local machine (or open in Codespaces!).
 
@@ -112,21 +113,22 @@ Create 4 new Repository Secrets with these properties:
     AZURE_SUBSCRIPTION_ID: 'your azure subscription id'
     AZURE_RESOURCE_GROUP: 'name of resource group created in previous step (i.e. rg-nextflow-runner)'
 ```
-3. Save your change. Commit and push to the main branch of your repo.
+3. Save your change. Commit and push to the `main` branch of your repo.
 4. This will trigger the GitHub Action workflow to provision the Azure Resources and deploy the backend API code.
 
 ### Create an Azure Static Web App for the frontend
 1. Open the `NextflowRunnerClient/wwwroot/appsettings.json` file.
 2. Update the `NextflowRunnerAPI` property with the URL of the API you deployed in the previous section.
-3. In the Azure Portal, browse to the Resource Group you created earlier.
-4. Click Create and search for "Static Web App". Then click Create.
+3. Commit and Push your change to the `main` branch of your repo.
+4. In the Azure Portal, browse to the Resource Group you created earlier.
+5. Click Create and search for "Static Web App". Then click Create.
 
 ![create static web app](./docs/imgs/create-swa.gif)
 
-5. Provide a name and default Azure region. Then click "Sign in with GitHub".
-6. Sign in with your GitHub credentials and authorize the application.
-7. Once you return to the create screen. Choose your organization, repository, and branch. (This __must__ be your fork of the nextflow-runner repo)
-8. Build Details should match the screenshot below:
+6. Provide a name and default Azure region. Then click "Sign in with GitHub".
+7. Sign in with your GitHub credentials and authorize the application.
+8. Once you return to the create screen, choose your organization, repository, and branch. (This __must__ be your fork of the nextflow-runner repo)
+9. Build Details should match the screenshot below:
 
 ![static web app github build details](./docs/imgs/create-swa-github.png)
 
@@ -137,8 +139,8 @@ Create 4 new Repository Secrets with these properties:
 | Api location | &lt;blank&gt; |
 | Output location | wwwroot |
 
-9. Click "Review + create" then "Create". Azure Static Web Apps will automatically create a CI/CD GitHub Actions workflow in your repository and deploy the application.
-10. Use the generated URL from the Overview tab of your Static Web App to browse to the site.
+10. Click "Review + create" then "Create". Azure Static Web Apps will automatically create a CI/CD GitHub Actions workflow in your repository and deploy the application.
+11. Use the generated URL from the Overview tab of your Static Web App to browse to the site.
 
 <hr/>
 
