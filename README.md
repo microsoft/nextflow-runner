@@ -46,7 +46,7 @@ This project has three parts, a database project, an Minimal API project, and a 
 You can download and run the projects locally, .NET 6.0 is required.
 
 ## Running on Azure
-Use the following steps for a new, greenfield, deployment to Azure.
+Use the following steps to deploy in your own Azure subscription.
 ### Fork and Clone 
 [Fork](https://github.com/Microsoft/nextflow-runner/fork) this Repo. Then, clone it to your local machine (or open in Codespaces!).
 
