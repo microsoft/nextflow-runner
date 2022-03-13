@@ -107,26 +107,26 @@ Create 4 new Repository Secrets with these properties:
 
 ### Run GitHub Actions workflow to build and deploy backend API
 1. Open the `.github/workflows/main.yml` file.
-1. Update the env variables for Azure Subscription ID and Resource Group with your values.
+2. Update the env variables for Azure Subscription ID and Resource Group with your values.
 ``` yml
     AZURE_SUBSCRIPTION_ID: 'your azure subscription id'
     AZURE_RESOURCE_GROUP: 'name of resource group created in previous step (i.e. rg-nextflow-runner)'
 ```
 3. Save your change. Commit and push to the main branch of your repo.
-3. This will trigger the GitHub Action workflow to provision the Azure Resources and deploy the backend API code.
+4. This will trigger the GitHub Action workflow to provision the Azure Resources and deploy the backend API code.
 
 ### Create an Azure Static Web App for the frontend
 1. Open the `NextflowRunnerClient/wwwroot/appsettings.json` file.
-1. Update the `NextflowRunnerAPI` property with the URL of the API you deployed in the previous section.
-1. In the Azure Portal, browse to the Resource Group you created earlier.
-1. Click Create and search for "Static Web App". Then click Create.
+2. Update the `NextflowRunnerAPI` property with the URL of the API you deployed in the previous section.
+3. In the Azure Portal, browse to the Resource Group you created earlier.
+4. Click Create and search for "Static Web App". Then click Create.
 
 ![create static web app](./docs/imgs/create-swa.gif)
 
-3. Provide a name and default Azure region. Then click "Sign in with GitHub".
-3. Sign in with your GitHub credentials and authorize the application.
-3. Once you return to the create screen. Choose your organization, repository, and branch. (This __must__ be your fork of the nextflow-runner repo)
-3. Build Details should match the screenshot below:
+5. Provide a name and default Azure region. Then click "Sign in with GitHub".
+6. Sign in with your GitHub credentials and authorize the application.
+7. Once you return to the create screen. Choose your organization, repository, and branch. (This __must__ be your fork of the nextflow-runner repo)
+8. Build Details should match the screenshot below:
 
 ![static web app github build details](./docs/imgs/create-swa-github.png)
 
@@ -137,8 +137,8 @@ Create 4 new Repository Secrets with these properties:
 | Api location | &lt;blank&gt; |
 | Output location | wwwroot |
 
-7. Click "Review + create" then "Create". Azure Static Web Apps will automatically create a CI/CD GitHub Actions workflow in your repository and deploy the application.
-7. Use the generated URL from the Overview tab of your Static Web App to browse to the site.
+9. Click "Review + create" then "Create". Azure Static Web Apps will automatically create a CI/CD GitHub Actions workflow in your repository and deploy the application.
+10. Use the generated URL from the Overview tab of your Static Web App to browse to the site.
 
 <hr/>
 
