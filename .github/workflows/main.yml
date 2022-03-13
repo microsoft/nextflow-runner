@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - Nextflow-Runner API
+name: Build and deploy Nextflow-Runner API
 
 on:
   push:
@@ -13,8 +13,6 @@ on:
   workflow_dispatch:
 
 env:
-  SOLUTION: '**/*.sln'
-  BUILDPLATFORM: 'Any CPU'
   BUILDCONFIGURATION: 'Release'
   AZURE_SUBSCRIPTION_ID: '1c642d88-5042-4d19-9d49-49be6612a40f'
   AZURE_RESOURCE_GROUP: 'rg-nextflow-runner'
@@ -33,19 +31,19 @@ jobs:
         include-prerelease: true
 
     - name: Build API
-      run: dotnet build ./NextflowRunner.API --configuration Release
+      run: dotnet build ./NextflowRunner.API --configuration ${{env.BUILDCONFIGURATION}}
 
     - name: Build DACPAC
-      run: dotnet build ./NextflowRunnerDB.Build --configuration Release
+      run: dotnet build ./NextflowRunnerDB.Build --configuration ${{env.BUILDCONFIGURATION}}
 
     - name: Build Serverless
-      run: dotnet build ./NextflowRunner.Serverless --configuration Release
+      run: dotnet build ./NextflowRunner.Serverless --configuration ${{env.BUILDCONFIGURATION}}
 
     - name: create API artifact
-      run: dotnet publish ./NextflowRunner.API -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish ./NextflowRunner.API -c ${{env.BUILDCONFIGURATION}} -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: create Serverless artifact
-      run: dotnet publish ./NextflowRunner.Serverless -c Release -o ${{env.DOTNET_ROOT}}/functions
+      run: dotnet publish ./NextflowRunner.Serverless -c ${{env.BUILDCONFIGURATION}} -o ${{env.DOTNET_ROOT}}/functions
 
     - name: Upload API artifact for deployment job
       uses: actions/upload-artifact@v2

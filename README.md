@@ -64,18 +64,21 @@ az group create --name <resource-group-name> --location <location i.e. "centralu
 ```
 az ad sp create-for-rbac --name githubworkflow --role Owner --scope '/subscription/<your-sub-id>/resourceGroups/<resource-group-name>' --sdk-auth > my.azureauth
 ```
-This command will save the output to `my.azureauth`. Open the file and use this information in the next steps.
+This command will save the output to `my.azureauth`. Open the file and use this information in step 4.
 
-3. Browse to your GitHub repo and switch to the `Settings` tab. From the `Security` section, choose `Secrets -> Actions`.
-Create 3 new Repository Secrets with these properties:
+3. Find the ObjectId of the Service Principal created in the previous step. This can be located in the Azure Portal from the App Registrations tab on the Azure Active Directory blade. You can also use the CLI.
+```
+az ad sp show --id <clientId from my.azureauth file> --query objectId
+```
+
+4. Browse to your GitHub repo and switch to the `Settings` tab. From the `Security` section, choose `Secrets -> Actions`.
+Create 4 new Repository Secrets with these properties:
 <table>
     <thead>
         <tr>
             <th>Name</th>
             <th>Value</th>
             <th>&nbsp;</th>
-        </tr>
-        <tr>
         </tr>
     </thead>
     <tbody>
@@ -94,19 +97,50 @@ Create 3 new Repository Secrets with these properties:
         <td>clientSecret value from my.azureauth file</td>
         <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-clientsecret.png" /></td>
     </tr>
+    <tr>
+        <td>KV_SPN_OBJECTID</td>
+        <td>objectId value from step 3</td>
+        <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-objectid.png" /></td>
+    </tr>
     <tbody>
 </table>
 
+### Run GitHub Actions workflow to build and deploy backend API
+1. Open the `.github/workflows/main.yml` file.
+1. Update the env variables for Azure Subscription ID and Resource Group with your values.
+``` yml
+    AZURE_SUBSCRIPTION_ID: 'your azure subscription id'
+    AZURE_RESOURCE_GROUP: 'name of resource group created in previous step (i.e. rg-nextflow-runner)'
+```
+3. Save your change. Commit and push to the main branch of your repo.
+3. This will trigger the GitHub Action workflow to provision the Azure Resources and deploy the backend API code.
 
+### Create an Azure Static Web App for the frontend
+1. Open the `NextflowRunnerClient/wwwroot/appsettings.json` file.
+1. Update the `NextflowRunnerAPI` property with the URL of the API you deployed in the previous section.
+1. In the Azure Portal, browse to the Resource Group you created earlier.
+1. Click Create and search for "Static Web App". Then click Create.
 
+![create static web app](./docs/imgs/create-swa.gif)
 
-1. Provision the backend resources and deploy code with GitHub Actions workflow
-1. Create an Azure Static Web App for the frontend
+3. Provide a name and default Azure region. Then click "Sign in with GitHub".
+3. Sign in with your GitHub credentials and authorize the application.
+3. Once you return to the create screen. Choose your organization, repository, and branch. (This __must__ be your fork of the nextflow-runner repo)
+3. Build Details should match the screenshot below:
 
-### Pre-reqs
-- Create service principal in Azure Subscription to authenticate with GitHub
-- Create GitHub secrets
+![static web app github build details](./docs/imgs/create-swa-github.png)
 
+| Property Name | Value |
+| ------------- | ----- |
+| Build Presets | Blazor |
+| App location | NextflowRunnerClient |
+| Api location | &lt;blank&gt; |
+| Output location | wwwroot |
+
+7. Click "Review + create" then "Create". Azure Static Web Apps will automatically create a CI/CD GitHub Actions workflow in your repository and deploy the application.
+7. Use the generated URL from the Overview tab of your Static Web App to browse to the site.
+
+<hr/>
 
 ## Contributing
 

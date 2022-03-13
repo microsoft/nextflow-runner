@@ -1,34 +1,49 @@
 @startuml nextflow-runner
 footer Nextflow Azure Plant-UML
-scale max 1024 width
+scale max 1920 width
 skinparam linetype polyline
 skinparam nodesep 20
 skinparam ranksep 20
 
 ' Azure
-!define AzurePuml https://raw.githubusercontent.com/RicardoNiepel/Azure-PlantUML/release/2-1/dist
+' !define AzurePuml https://raw.githubusercontent.com/RicardoNiepel/Azure-PlantUML/release/2-1/dist
+!define AzurePuml https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-1/dist
 !includeurl AzurePuml/AzureCommon.puml
-!includeurl AzurePuml/Databases/all.puml
+' !includeurl AzurePuml/AzureSimplified.puml
 !includeurl AzurePuml/Compute/AzureAppService.puml
 !includeurl AzurePuml/Compute/AzureBatch.puml
+!includeurl AzurePuml/Compute/AzureFunction.puml
 !includeurl AzurePuml/Compute/AzureVirtualMachine.puml
+!includeurl AzurePuml/Containers/AzureContainerInstance.puml
+!includeurl AzurePuml/Databases/all.puml
 !includeurl AzurePuml/Storage/AzureBlobStorage.puml
+!includeurl AzurePuml/Web/all.puml
+!includeurl AzurePuml/Web/AzureWebApp.puml
+
 !include ./puml/Github.puml
 
-AzureAppService(app, "App Service", "Nextflow Runner API")
+AzureAppService(app, "WebAPI", "Nextflow Runner API")
+AzureFunction(orchestrator, "Orchestrator", "Nextflow Runner Serverless")
+AzureFunction(httplog, "WebLog", "Logging")
+AzureWebApp(blazorapp, "Blazor WebApp", "Nextflow Runner UI")
 AzureBatch(batch, "Batch Account", "nf-azure")
 AzureSqlDatabase(sql, "SQL", "Nextflow Runner DB")
-AzureVirtualMachine(vm, "Linux VM", "Nextflow Runner VM")
 AzureBlobStorage(blobinput, "Blob Storage", "Nextflow Runner Input")
 AzureBlobStorage(bloboutput, "Blob Storage", "Nextflow Runner Output")
+AzureContainerInstance(aci, "Container Instance", "Nextflow Runner Container")
+
 GitHub(github, "GitHub", "Nextflow Workflow")
 
 sql -> app
-app -> vm : SSH
-vm -> batch : nextflow
-blobinput --> batch
-batch --> bloboutput
-github --> vm : main.nf
+app -> orchestrator
+orchestrator -> aci
+aci --> httplog
+httplog --> orchestrator
+aci -> batch : nextflow
+blobinput --> batch : input
+batch --> bloboutput : results
+github --> aci : nf-core/atacseq
+blazorapp --> app
 
 'listsprites
 
