@@ -53,7 +53,7 @@ sprite $git-icon [51x51/16] {
 }
 
 !definelong GitHubBase(e_alias, e_label, e_techn, e_sprite)
-rectangle "==e_label\n<color:blue><$e_sprite></color>\n//<size:TECHN_FONT_SIZE>[e_techn]</size>//" as e_alias
+rectangle "==e_label\n<color:blue><$e_sprite></color>" as e_alias
 !enddefinelong
 
 !define GitHub(e_alias, e_label, e_techn) GitHubBase(e_alias, e_label, e_techn, git-icon)
