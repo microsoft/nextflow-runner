@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ssh.net" Version="2020.0.1" />
+    <PackageReference Include="ssh.net" Version="2020.0.2" />
   </ItemGroup>
 
 </Project>
