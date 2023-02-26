@@ -107,14 +107,14 @@ Create 4 new Repository Secrets with these properties:
         <td>SQL_ADMIN_PASSWORD</td>
         <td>generate a strong passphrase</td>
         <td>
-            <code class="language-bash">tr -dc 'A-Za-z0-9!"#$%&amp;'\''()*+,-./:;&lt;=&gt;?@[\]^_`{|}~' &lt;/dev/urandom | head -c 23 ; echo</code>
+            <code class="language-bash">tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 23  ; echo</code>
         </td>
     </tr>
     <tr>
         <td>STORAGE_PASSPHRASE</td>
         <td>generate a strong passphrase</td>
         <td>
-            <code class="language-bash">tr -dc 'A-Za-z0-9!"#$%&amp;'\''()*+,-./:;&lt;=&gt;?@[\]^_`{|}~' &lt;/dev/urandom | head -c 23 ; echo</code>
+            <code class="language-bash"> tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 23  ; echo</code>
         </td>
     </tr>
     <tbody>
