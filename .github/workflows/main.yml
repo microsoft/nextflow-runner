@@ -14,8 +14,8 @@ on:
 
 env:
   BUILDCONFIGURATION: 'Release'
-  AZURE_SUBSCRIPTION_ID: '1c642d88-5042-4d19-9d49-49be6612a40f'
-  AZURE_RESOURCE_GROUP: 'rg-nextflow-runner'
+  AZURE_SUBSCRIPTION_ID: '9169421f-8238-4d23-a41e-93319a3a3fbb'
+  AZURE_RESOURCE_GROUP: 'genom-dev-nfr-rg'
 
 jobs:
   build:

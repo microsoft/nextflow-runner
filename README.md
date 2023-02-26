@@ -57,19 +57,19 @@ Use the following steps to deploy in your own Azure subscription.
 1. Create a Resource Group in your Azure Subscription. You can accomplish this task using the Portal, Azure PowerShell, or the Azure CLI.
 ```
 az login
-az account set --subscriptionId <your-sub-id>
+az account set --subscription <your-sub-id>
 az group create --name <resource-group-name> --location <location i.e. "centralus">
 ```
 
 2. Create an Azure AD service principal that has the `Owner` role assigned to the resource group created in the previous step. Pipe the output to a file, or save the results to a text file for later reference.
 ```
-az ad sp create-for-rbac --name githubworkflow --role Owner --scope '/subscription/<your-sub-id>/resourceGroups/<resource-group-name>' --sdk-auth > my.azureauth
+az ad sp create-for-rbac --name githubworkflow --role Owner --scope '/subscriptions/<your-sub-id>/resourceGroups/<resource-group-name>' --sdk-auth > my.azureauth
 ```
 This command will save the output to `my.azureauth`. Open the file and use this information in step 4.
 
 3. Find the ObjectId of the Service Principal created in the previous step. This can be located in the Azure Portal from the App Registrations tab on the Azure Active Directory blade. You can also use the CLI.
 ```
-az ad sp show --id <clientId from my.azureauth file> --query objectId
+az ad sp show --id <clientId from my.azureauth file> --query id
 ```
 
 4. Browse to your GitHub repo and switch to the `Settings` tab. From the `Security` section, choose `Secrets -> Actions`.
@@ -102,6 +102,20 @@ Create 4 new Repository Secrets with these properties:
         <td>KV_SPN_OBJECTID</td>
         <td>objectId value from step 3</td>
         <td><img alt="azure credentials github secret" src="./docs/imgs/create-secret-azure-objectid.png" /></td>
+    </tr>
+    <tr>
+        <td>SQL_ADMIN_PASSWORD</td>
+        <td>generate a strong passphrase</td>
+        <td>
+            <code class="language-bash">tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 23  ; echo</code>
+        </td>
+    </tr>
+    <tr>
+        <td>STORAGE_PASSPHRASE</td>
+        <td>generate a strong passphrase</td>
+        <td>
+            <code class="language-bash"> tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 23  ; echo</code>
+        </td>
     </tr>
     <tbody>
 </table>
