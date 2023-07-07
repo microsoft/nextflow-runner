@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Azure.Management.ContainerInstance.Fluent" Version="1.38.0" />
     <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.38.0" />
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager.Fluent" Version="1.38.0" />
-    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.23" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
   </ItemGroup>
 
   <ItemGroup>
